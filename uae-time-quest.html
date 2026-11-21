@@ -1,0 +1,1715 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102c2b">
+<title>UAE TIME QUEST | رحلة الاتحاد</title>
+<script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-v1.6.0.min.js"></script>
+<script>window.AFRAME||document.write('<script src="https://aframe.io/releases/1.6.0/aframe.min.js"><\/script>')</script>
+<style>
+:root{--ink:#092624;--panel:#10342f;--gold:#e9c68b;--cream:#fff6e7;--mint:#cce9d8}
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,"Arial",sans-serif;background:#102c2b;color:var(--cream);overflow:hidden}
+a-scene{height:100vh;width:100vw}
+button{font:inherit;cursor:pointer}
+#top{position:fixed;z-index:6;left:18px;right:18px;top:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;pointer-events:none}
+.glass{background:#0c2928e8;border:1px solid #e9c68b6b;box-shadow:0 10px 35px #0004;backdrop-filter:blur(10px);border-radius:15px;padding:11px 16px}
+.brand{font-family:Arial,sans-serif;letter-spacing:2px;color:var(--gold);font-size:13px;font-weight:800}
+.sub{font-size:12px;color:#e2e9db;margin-top:5px}
+#count{font-size:20px;font-weight:800;color:var(--gold);text-align:center}
+#bar{width:128px;height:5px;border-radius:8px;background:#ffffff30;margin-top:8px;overflow:hidden}
+#fill{width:0;height:100%;background:linear-gradient(90deg,#4ba985,var(--gold));transition:width .5s}
+#bottom{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:6;display:flex;gap:10px;max-width:95%;width:max-content;align-items:center;flex-wrap:wrap;justify-content:center}
+#openQuest,#toggleHelp{border:1px solid #e9c68b;background:#143c34f2;color:#fff5de;border-radius:11px;padding:12px 19px;box-shadow:0 6px 25px #0005;font-weight:bold}
+#openQuest{background:var(--gold);color:#15332c}
+#toast{position:fixed;z-index:8;bottom:87px;left:50%;transform:translateX(-50%);padding:10px 18px;background:#0b2929ed;border:1px solid #e9c68b6b;border-radius:12px;text-align:center;max-width:90%;font-size:13px;pointer-events:none}
+#toast:empty{display:none}
+.overlay{position:fixed;inset:0;z-index:20;display:flex;justify-content:center;align-items:center;background:linear-gradient(120deg,#071b1cf2,#143b34ee);padding:16px;overflow-y:auto}
+.overlay[hidden]{display:none!important}
+.sheet{width:min(650px,100%);max-height:95vh;overflow-y:auto;text-align:center;background:linear-gradient(145deg,#21453a,#0d2d2b);border:1px solid #d5b77b;border-radius:23px;padding:clamp(18px,4vw,37px);box-shadow:0 24px 90px #0009}
+.eyebrow{letter-spacing:2px;font:700 11px Arial,sans-serif;color:var(--gold);direction:ltr}
+h1{font-size:clamp(31px,5vw,51px);margin:13px 0;color:#f4d7a2}
+h2{font-size:clamp(23px,3vw,32px);color:#f4d7a2;line-height:1.5;margin:12px 0}
+p{line-height:1.95;font-size:15px;color:#f5f0e4}
+.primary{border:0;border-radius:11px;background:var(--gold);color:#12342c;padding:13px 24px;font-weight:bold;min-width:175px}
+.outline{border:1px solid #bca97d;border-radius:10px;background:#244b41;color:#fff;padding:11px 15px}
+.choice{width:100%;display:block;text-align:right;padding:14px 16px;margin:9px 0;border:1px solid #729483;background:#244b41;color:white;border-radius:12px;line-height:1.6}
+.choice:hover,.choice:focus-visible{background:#346858;outline:2px solid var(--gold)}
+.choice:disabled{opacity:.7;cursor:default}
+.choice.right{background:#1f6b4f;border-color:#8fe0b5;opacity:1}
+.choice.wrong{background:#6e3a34;border-color:#f0a196;opacity:1}
+.kbd{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border:1px solid #e9c68b88;border-radius:6px;font-size:12px;color:#f3d18f;text-align:center}
+#response{min-height:35px;color:#f2d391;font-weight:bold}
+#next{display:none;margin:auto}
+#phase{font-size:13px;color:#e6d3a6}
+#loader{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:#0c302e;color:#f4d7a2;text-align:center;padding:25px}
+#loader[hidden]{display:none}
+#help{position:fixed;bottom:79px;left:18px;z-index:9;background:#0b2a28f2;border:1px solid #e9c68b7b;border-radius:12px;padding:13px;max-width:330px;line-height:1.8;font-size:12px}
+#help[hidden]{display:none}
+#help b{color:#f3d18f}
+.flag{width:60px;height:38px;display:flex;margin:12px auto;box-shadow:0 4px 18px #0005;direction:ltr}
+.flag .red{width:25%;background:#ef3340}.stripes{width:75%;display:flex;flex-direction:column}.stripes i{flex:1}.stripes i:nth-child(1){background:#009739}.stripes i:nth-child(2){background:#fff}.stripes i:nth-child(3){background:#000}
+#artifactInfo .sheet{border:2px solid #d7b77a}#artifactInfo h2{color:#ffe0a1}
+#fallback{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:#123c36;padding:25px;text-align:center}
+#errText{font-size:12px;color:#ffc9a8;direction:ltr}
+@media(max-width:500px){#top{left:8px;right:8px;top:8px}.glass{padding:8px 10px}.brand{font-size:10px}.sub{font-size:10px}#count{font-size:16px}#bar{width:88px}#bottom{bottom:8px}#toast{bottom:65px}#openQuest,#toggleHelp{padding:10px 12px;font-size:12px}}
+#sparkles{position:fixed;inset:0;z-index:27;pointer-events:none;overflow:hidden}
+.spark{position:absolute;width:9px;height:14px;border-radius:2px;animation:confettiFly var(--dur,2.2s) ease-out forwards;transform:rotate(var(--spin,0deg))}
+@keyframes confettiFly{0%{opacity:0;transform:translate3d(0,-30px,0) rotate(0deg)}12%{opacity:1}100%{opacity:0;transform:translate3d(var(--dx,20px),105vh,0) rotate(900deg)}}
+#achievement{position:fixed;top:105px;left:50%;transform:translate(-50%,-20px) scale(.94);z-index:32;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;text-align:center;min-width:230px;max-width:90%;padding:17px 24px;border-radius:17px;background:linear-gradient(120deg,#173f35f5,#28594af5);border:2px solid #e9c68b;box-shadow:0 15px 45px #0008}
+#achievement.visible{opacity:1;transform:translate(-50%,0) scale(1)}
+#achievement strong{display:block;color:#ffdb91;font-size:19px;margin-bottom:5px}
+#achievement span{font-size:13px}
+#mission{position:fixed;right:16px;top:118px;z-index:6;max-width:240px;font-size:12px;line-height:1.8;pointer-events:none}
+#mission strong{color:#f3d18f}
+#collectibleStatus,#missionDist{font-size:12px;color:#f7d9a2}
+#soundToggle{border:1px solid #e9c68b;background:#143c34f2;color:#fff5de;border-radius:11px;padding:12px 14px}
+#cinematic .sheet{animation:cinRise .75s both}
+@keyframes cinRise{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+#cinematic .flag{animation:flagPulse 1.8s ease-in-out infinite alternate}
+@keyframes flagPulse{from{transform:scale(.93)}to{transform:scale(1.13)}}
+#quiz .sheet{animation:cinRise .4s both}
+#end .sheet{animation:cinRise .8s both}
+@media(max-width:600px){#mission{top:96px;right:8px;max-width:180px;font-size:10px}#achievement{top:95px}}
+#desktopMenu{position:fixed;z-index:12;left:18px;top:105px;background:#133f37;color:#ffe2a7;border:1px solid #d9ba7b;border-radius:10px;padding:9px 13px}
+.loadmark{font-size:54px;animation:flagPulse 1.4s infinite alternate}.loadtrack{height:11px;width:min(360px,70vw);border:1px solid #c6a96f;border-radius:12px;background:#ffffff18;overflow:hidden;margin:18px auto}.loadtrack>div{height:100%;width:0%;background:linear-gradient(90deg,#bb9154,#f6d99a);transition:width .2s}
+#vrStart{display:none;margin:12px auto 0;border:1px solid #e9c68b;background:#143c34;color:#fff5de;border-radius:11px;padding:12px 22px;font-weight:bold}
+#xrNote{display:none;font-size:12px;color:#ffd7a0;margin-top:10px}
+#joy{position:fixed;left:22px;bottom:92px;width:124px;height:124px;border-radius:50%;background:#0c292870;border:1px solid #e9c68b88;z-index:7;display:none;touch-action:none}
+#joy i{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:#e9c68bcc;pointer-events:none}
+body.touch #joy{display:block}
+body.touch #help{bottom:226px}
+</style>
+</head>
+<body>
+<div id="loader"><div><div class="loadmark">🇦🇪</div><h2>رحلة الاتحاد</h2><p id="loadStatus">جارٍ تجهيز العالم ثلاثي الأبعاد…</p><div class="loadtrack"><div id="loadFill"></div></div><p id="loadPercent">0%</p><p style="font-size:12px">يحتاج التشغيل الأول إلى اتصال بالإنترنت</p></div></div>
+<div id="fallback"><div><h2>تعذّر تحميل المحرك ثلاثي الأبعاد</h2><p>تأكد من اتصال الإنترنت، وافتح الملف باستخدام Chrome أو متصفح Meta Quest، ثم حدّث الصفحة.</p><p id="errText"></p></div></div>
+<div id="top"><div class="glass"><div class="brand">UAE TIME QUEST · VR EDITION</div><div class="sub">رحلة الاتحاد • مشروع اليوم الوطني</div><div class="sub" id="phase">الفريج الإماراتي القديم</div></div><div class="glass"><div id="count">٠ / ٧</div><div id="bar"><div id="fill"></div></div><div class="sub">التحديات المكتملة</div></div></div>
+<div id="bottom"><button id="openQuest" onclick="showQuestion()">✦ افتح التحدي التالي</button><button id="toggleHelp" onclick="toggleHelp()">طريقة اللعب</button><button id="soundToggle" onclick="toggleSound()" aria-label="تشغيل الأصوات" aria-pressed="true">🔊</button></div>
+<button id="desktopMenu" onclick="toggleGameMenu()" aria-label="Open game menu">☰ القائمة</button><div id="toast"></div>
+<div id="sparkles"></div>
+<div id="joy" aria-hidden="true"><i id="joyKnob"></i></div>
+<div id="artifactInfo" class="overlay" hidden><div class="sheet" style="max-width:580px">
+<div class="eyebrow">اكتشف تراثنا · HERITAGE DISCOVERY</div>
+<h2 id="artifactTitle"></h2><p id="artifactDescription"></p>
+<button class="primary" id="artifactClose" onclick="closeHeritageInfo()">العودة إلى الفريج</button>
+</div></div>
+<div id="achievement"><strong id="achTitle">إنجاز جديد!</strong><span id="achBody"></span></div>
+<div id="mission" class="glass"><strong>مهمتك الآن</strong><div id="missionText">اكتشف الفريج الإماراتي</div><div id="missionDist"></div><div id="collectibleStatus">نجوم الاتحاد: ٠ / ٦</div></div>
+<div id="help" hidden>
+<b>على الحاسوب:</b> W A S D أو الأسهم للحركة، واسحب بالفأرة للنظر. اتبع <b>العمود الذهبي</b> واقترب منه لفتح التحدي، أو اضغط Q. أجب بالأرقام ١ ٢ ٣ ثم Enter للمتابعة.<br>
+<b>على الهاتف:</b> استخدم عصا التحكم أسفل اليسار للمشي واسحب الشاشة للنظر.<br>
+<b>في Quest:</b> العصا اليسرى للمشي، واليمنى للالتفاف. وجّه الشعاع إلى الأرض واضغط الزناد للانتقال السريع. A للتحدي التالي أو للتأكيد، B لتغيير الاختيار، X للقائمة. يمكنك أيضاً اللعب بيديك: وجّه ثم اقرص بالإبهام والسبابة.<br>
+اجمع النجوم الذهبية الست واكتشف عناصر التراث الست (اختياري).</div>
+<div id="cinematic" class="overlay" hidden><div class="sheet" style="max-width:680px">
+<div class="eyebrow">UAE TIME QUEST • 1971 → TODAY</div>
+<div class="flag"><span class="red"></span><span class="stripes"><i></i><i></i><i></i></span></div>
+<h1 id="cinTitle">من الماضي إلى المستقبل</h1>
+<p id="cinText">من فريجنا القديم إلى دبي الحديثة… رحلة وطن صنع المستحيل</p>
+<div style="height:5px;background:#ffffff26;border-radius:10px;overflow:hidden"><div id="cinProgress" style="width:0;height:100%;background:#e9c68b;transition:width 3.5s linear"></div></div>
+<p style="font-size:12px;color:#e9c68b">رحلة الاتحاد • ٢ ديسمبر ١٩٧١</p>
+</div></div>
+<div id="intro" class="overlay"><div class="sheet">
+<div class="flag"><span class="red"></span><span class="stripes"><i></i><i></i><i></i></span></div>
+<div class="eyebrow">A JOURNEY THROUGH THE UNION</div><h1>رحلة الاتحاد</h1>
+<p>ابدأ رحلتك في فريج إماراتي قديم، واكتشف كيف تطورت دولتنا منذ قيام الاتحاد في <b>٢ ديسمبر ١٩٧١</b>. اتبع <b>العمود الذهبي</b> إلى كل تحدٍّ، وشاهد أهل الفريج في حياتهم اليومية، ثم انتقل إلى دبي الحديثة المليئة بالمحتفلين والأعلام. أكمل سبعة تحديات عن التاريخ والإنجازات والتسامح والهوية الوطنية!</p>
+<p style="font-size:12px;color:#ddc89e">تجربة تعليمية مستوحاة من التراث الإماراتي وليست إعادة بناء تاريخية لموقع محدد</p>
+<button class="primary" id="startBtn" onclick="startGame()">ابدأ المغامرة 🇦🇪</button><br>
+<button id="vrStart" onclick="startVR()">🥽 العب في الواقع الافتراضي</button>
+<div id="xrNote">لتفعيل الواقع الافتراضي في Quest افتح اللعبة عبر رابط يبدأ بـ https</div>
+</div></div>
+<div id="quiz" class="overlay" hidden><div class="sheet">
+<div class="eyebrow" id="qnum">CHALLENGE</div><h2 id="qtitle"></h2><p id="qdesc"></p>
+<h2 id="qtext" style="font-size:21px;color:#fff"></h2><div id="choices"></div>
+<div id="response" aria-live="polite"></div><button id="next" class="primary" onclick="advance()">متابعة الرحلة</button>
+</div></div>
+<div id="end" class="overlay" hidden><div class="sheet">
+<div class="flag"><span class="red"></span><span class="stripes"><i></i><i></i><i></i></span></div>
+<div class="eyebrow">NATIONAL DAY FINALE</div><h1>دام عزّك يا وطن</h1><h2>مبروك! أنهيت رحلة الاتحاد</h2>
+<p>نتيجتك: <b>٧ / ٧</b></p><p id="finalStars" style="color:#f6d58c"></p><p>من الماضي إلى الحاضر، ومن الاتحاد إلى الإنجاز، تبقى الإمارات وطن التسامح والعطاء والهوية الأصيلة.</p>
+<button class="primary" onclick="restart()">العب من جديد</button> <button class="outline" onclick="document.getElementById('end').hidden=true">شاهد الاحتفال</button>
+</div></div>
+<a-scene id="scene" embedded
+  renderer="antialias:true;colorManagement:true;highRefreshRate:false;foveationLevel:1"
+  webxr="requiredFeatures:local-floor;optionalFeatures:bounded-floor,hand-tracking"
+  vr-mode-ui="enabled:true" loading-screen="enabled:false"
+  fog="type:linear;color:#d3e5e6;near:40;far:260" background="color:#cfe5ea">
+<a-entity id="hemi" light="type:hemisphere;color:#fff6e8;groundColor:#b8986c;intensity:.85"></a-entity>
+<a-entity id="sun" light="type:directional;color:#fff0d1;intensity:.95" position="-14 22 5"></a-entity>
+<a-entity id="oldWorld"></a-entity><a-entity id="newWorld" visible="false"></a-entity>
+<a-entity id="rig" position="0 0 8">
+ <a-entity id="camera" camera look-controls="pointerLockEnabled:false" wasd-controls="acceleration:22;fly:false" position="0 1.65 0">
+  <a-entity id="mouseCursor" cursor="rayOrigin:mouse" raycaster="objects:.interactive;far:80"></a-entity>
+ </a-entity>
+</a-entity>
+</a-scene>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const digits=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+const ar=n=>String(n).replace(/[0-9]/g,d=>digits[+d]);
+const D2R=Math.PI/180;
+const challenges=[
+ {title:'الحياة قبل الاتحاد',desc:'ابحث عن الكتاب القديم وتعرّف على التعليم في الماضي.',question:'كيف تطور التعليم في الإمارات بعد الاتحاد؟',choices:['توقفت المدارس عن العمل','توسعت المدارس والجامعات وانتشرت فرص التعليم','أصبح التعليم مقتصراً على فئة قليلة'],correct:1,explain:'أسهم الاتحاد في تطوير التعليم وتوسيع فرصه في أنحاء الدولة.'},
+ {title:'قيام الاتحاد',desc:'قف أمام علم الإمارات وتذكّر اللحظة التاريخية.',question:'متى أُعلن قيام دولة الإمارات العربية المتحدة؟',choices:['٢ ديسمبر ١٩٧١','٢ ديسمبر ١٩٨١','٢ ديسمبر ١٩٦١'],correct:0,explain:'أُعلن الاتحاد في ٢ ديسمبر ١٩٧١، وانضمت رأس الخيمة في ١٠ فبراير ١٩٧٢.'},
+ {title:'المواصلات والعمران',desc:'اكتشف المحمل البحري والبيت القديم.',question:'ما أبرز مظاهر تطور المواصلات والعمران بعد الاتحاد؟',choices:['توقفت مشاريع الطرق','بقيت المدن دون تغيير','توسعت الطرق والمطارات والموانئ والبنية التحتية'],correct:2,explain:'شهدت الإمارات توسعاً كبيراً في النقل والبنية التحتية، مع المحافظة على التراث.'},
+ {title:'إنجازات الوطن',desc:'وصلت إلى الإمارات الحديثة. استكشف معالم نهضتها.',question:'أيّ إنجاز يعكس تقدم الإمارات في مجالات العلم والتكنولوجيا؟',choices:['مسبار الأمل لاستكشاف المريخ','التوقف عن إنشاء الجامعات','الاعتماد على وسائل النقل القديمة فقط'],correct:0,explain:'دخل مسبار الأمل مدار المريخ عام ٢٠٢١، في إنجاز علمي إماراتي بارز.'},
+ {title:'احترام الاختلاف',desc:'التسامح قيمة تجمع سكان الإمارات على الاحترام.',question:'كيف ينشر المواطن الإماراتي التسامح في المجتمع؟',choices:['إطلاق الأحكام المسبقة','احترام الآخرين مهما اختلفت ثقافاتهم ومعتقداتهم','رفض الآراء المختلفة'],correct:1,explain:'يساعد احترام الاختلاف والحقوق والتعامل دون تمييز على تعزيز التعايش.'},
+ {title:'الأسرة والحوار',desc:'الأسرة والمدرسة والجامعة تزرع قيم الاحترام.',question:'كيف ترسّخ الأسرة قيم التسامح لدى الأبناء؟',choices:['تشجيع التعصب','تجاهل آراء الآخرين','القدوة الحسنة وتعليم الاحترام والحوار منذ الصغر'],correct:2,explain:'يتعلم الأبناء التسامح من سلوك الوالدين والحوار الهادئ واحترام الآخرين.'},
+ {title:'الهوية الوطنية',desc:'اختتم رحلتك بالتفكير في مسؤوليتك تجاه الوطن.',question:'كيف نحافظ على الهوية الوطنية مع احترام تنوع المجتمع؟',choices:['الاعتزاز بالتراث والتعاون مع الجميع باحترام','السخرية من الثقافات الأخرى','الابتعاد عن المشاركة المجتمعية'],correct:0,explain:'نجمع بين الاعتزاز بالتراث الإماراتي ونشر الاحترام والتعاون بين أفراد المجتمع.'}
+];
+const QUEST_SPOTS=[[7,-20.5],[1.6,-7.5],[-18,-37],[0,-21],[0,-38.5],[-25,-6],[0,-49]];
+const RETRY_SPOT=[0,-44];
+const BOUNDS={old:{x0:-46,x1:46,z0:-64,z1:18},modern:{x0:-46,x1:46,z0:-112,z1:18}};
+
+let progress=0,answered=false,started=false,transitioning=false;
+let retryQueue=[],retryMode=false,retryIndex=0,lastAnswerCorrect=false;
+let stars=0,soundEnabled=true,audioContext=null,lastAchievementTimer=0,musicBeat=0;
+let worldName='old',vrFinalTimer=0,insideMarker=false,wasdBlocked=false;
+let smoothTurn=false;try{smoothTurn=localStorage.getItem('uaeq-smooth-turn')==='1'}catch(e){}
+const visitedStars=new Set(),starItems=[],heritageItems=[],heritageSeen=new Set();
+let heritageActive=null,heritageRewardGiven=false;
+let scene,rig,cameraEl,oldEl,modernEl,markerEl,markerSign;
+const colliders={old:[],modern:[]};
+const anims={old:[],modern:[],always:[]};
+const npcs=[],roamers=[],vrTargets=[];
+const onTick=(world,fn)=>anims[world].push(fn);
+function activeIndex(){return retryMode?retryQueue[retryIndex]:progress}
+let _h,_f,_v,_v2,_mA,_q,_e,_p,_s,_sph;
+function initScratch(){_h=new THREE.Vector3();_f=new THREE.Vector3();_v=new THREE.Vector3();_v2=new THREE.Vector3();_mA=new THREE.Matrix4();_q=new THREE.Quaternion();_e=new THREE.Euler();_p=new THREE.Vector3();_s=new THREE.Vector3();_sph=new THREE.Sphere()}
+
+function tone(freq=660,length=.14,type='sine',volume=.035){
+ if(!soundEnabled||document.hidden)return;
+ try{
+  audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();
+  if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+  const osc=audioContext.createOscillator(),gain=audioContext.createGain(),t=audioContext.currentTime;
+  osc.type=type;osc.frequency.setValueAtTime(freq,t);
+  gain.gain.setValueAtTime(.001,t);gain.gain.linearRampToValueAtTime(volume,t+.025);gain.gain.exponentialRampToValueAtTime(.001,t+length);
+  osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(t+length);
+ }catch(e){console.warn('Audio unavailable',e)}
+}
+function backgroundNote(){
+ if(!started||transitioning||!audioContext||audioContext.state!=='running')return;
+ const notes=worldName==='old'?[147,220,196,233,196,220,175,196]:[196,247,294,330,294,247,220,247];
+ const beat=musicBeat++%notes.length;
+ tone(notes[beat],1.25,'sine',.018);
+ if(beat%4===0)tone(notes[0]/2,1.6,'sine',.013);
+}
+function toggleSound(){
+ soundEnabled=!soundEnabled;
+ $('soundToggle').textContent=soundEnabled?'🔊':'🔇';
+ $('soundToggle').setAttribute('aria-pressed',String(soundEnabled));
+ tone(750,.14);
+}
+setInterval(backgroundNote,850);
+
+function sparkleBurst(count=30){
+ if(isImmersive())return;
+ const root=$('sparkles'),colors=['#ef3340','#ffffff','#009739','#f5d28d'];
+ for(let i=0;i<count;i++){
+  const piece=document.createElement('span');piece.className='spark';
+  piece.style.left=(Math.random()*100)+'%';piece.style.top='-20px';
+  piece.style.background=colors[i%4];piece.style.setProperty('--dx',((Math.random()-.5)*350)+'px');
+  piece.style.setProperty('--dur',(1.5+Math.random()*2.4)+'s');
+  root.appendChild(piece);setTimeout(()=>piece.remove(),4100);
+ }
+}
+function achievement(title,body){
+ $('achTitle').textContent=title;$('achBody').textContent=body;
+ $('achievement').classList.add('visible');clearTimeout(lastAchievementTimer);
+ lastAchievementTimer=setTimeout(()=>$('achievement').classList.remove('visible'),3300);
+ vrToast(title+' — '+body);
+}
+function toast(message){$('toast').textContent=message;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').textContent='',4500);vrToast(message)}
+function toggleHelp(){$('help').hidden=!$('help').hidden}
+
+const _geo={};
+const G=(k,make)=>_geo[k]||(_geo[k]=make());
+const geoBox=()=>G('box',()=>new THREE.BoxGeometry(1,1,1));
+const geoCyl=(seg=10,top=1)=>G('cyl'+seg+'_'+top,()=>new THREE.CylinderGeometry(top,1,1,seg,1));
+const geoSph=(w=12,h=8)=>G('sph'+w+'_'+h,()=>new THREE.SphereGeometry(1,w,h));
+const geoTor=(tube,arc=Math.PI*2,rs=6,ts=20)=>G('tor'+tube.toFixed(3)+'_'+arc.toFixed(2)+'_'+ts,()=>new THREE.TorusGeometry(1,tube,rs,ts,arc));
+const geoPlane=()=>G('plane',()=>new THREE.PlaneGeometry(1,1));
+function geoTri(a,b,c){
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute([...a,...b,...c,...a,...c,...b],3));
+ g.computeVertexNormals();return g;
+}
+function xform(x,y,z,rot,sx,sy,sz){
+ _e.set((rot?rot[0]:0)*D2R,(rot?rot[1]:0)*D2R,(rot?rot[2]:0)*D2R,'YXZ');
+ return new THREE.Matrix4().compose(_p.set(x,y,z),_q.setFromEuler(_e),_s.set(sx,sy,sz));
+}
+const MAT={};
+function initMaterials(){
+ MAT.lit=new THREE.MeshLambertMaterial({vertexColors:true});
+ MAT.glow=new THREE.MeshBasicMaterial({vertexColors:true});
+ MAT.win=new THREE.MeshLambertMaterial({vertexColors:true,emissive:new THREE.Color('#000000')});
+ MAT.ripple=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:.3,depthWrite:false});
+ MAT.jet=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:.6,depthWrite:false});
+ for(let i=0;i<3;i++)MAT['bulb'+i]=new THREE.MeshBasicMaterial({vertexColors:true});
+ const nt=noiseTexture();
+ MAT.stone=new THREE.MeshLambertMaterial({vertexColors:true});
+ MAT.stone.onBeforeCompile=sh=>{
+  sh.uniforms.noiseMap={value:nt};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWPos;').replace('#include <project_vertex>','#include <project_vertex>\nvWPos=(modelMatrix*vec4(transformed,1.0)).xyz;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWPos;\nuniform sampler2D noiseMap;').replace('#include <color_fragment>','#include <color_fragment>\nvec2 nuv=vec2(vWPos.x+vWPos.z,vWPos.y+vWPos.z*0.37);\nfloat nz=texture2D(noiseMap,nuv*0.21).r*0.6+texture2D(noiseMap,nuv*1.3).r*0.4;\ndiffuseColor.rgb*=0.84+0.3*nz;');
+ };
+}
+function noiseTexture(){
+ const n=128,cv=document.createElement('canvas');cv.width=cv.height=n;const cx=cv.getContext('2d'),img=cx.createImageData(n,n);
+ let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+ const oct=[[4,.4],[8,.3],[32,.18],[64,.12]].map(([g,w])=>({g,w,a:Float32Array.from({length:g*g},rnd)}));
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+  let v=0;
+  for(const o of oct){const g=o.g,fx=x/n*g,fy=y/n*g,x0=Math.floor(fx),y0=Math.floor(fy),tx=fx-x0,ty=fy-y0,sx=tx*tx*(3-2*tx),sy=ty*ty*(3-2*ty),at=(i,j)=>o.a[(j%g)*g+(i%g)];
+   v+=o.w*((at(x0,y0)*(1-sx)+at(x0+1,y0)*sx)*(1-sy)+(at(x0,y0+1)*(1-sx)+at(x0+1,y0+1)*sx)*sy)}
+  const k=(y*n+x)*4;img.data[k]=img.data[k+1]=img.data[k+2]=Math.round(v*255);img.data[k+3]=255;
+ }
+ cx.putImageData(img,0,0);const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.NoColorSpace;return t;
+}
+class Batch{
+ constructor(){this.lists={};this.base=null;this.bone=-1;this.ao=false}
+ add(geo,m,color,key){if(this.base)m.premultiply(this.base);(this.lists[key||'lit']||(this.lists[key||'lit']=[])).push({geo,m,color,bone:this.bone,ao:this.ao});return this}
+ lathe(pts,x,y,z,c,o={}){
+  const seg=o.seg||16,ps=o.phiStart||0,pl=o.phiLength||Math.PI*2,k='lathe'+JSON.stringify(pts)+seg+'_'+ps.toFixed(3)+'_'+pl.toFixed(3);
+  const g=G(k,()=>new THREE.LatheGeometry(pts.map(q=>new THREE.Vector2(q[0],q[1])),seg,ps,pl)),s=o.scale||[1,1,1];
+  return this.add(g,xform(x,y,z,o.rot,s[0],s[1],s[2]),c,o.mat);
+ }
+ seg(a,b,w,d,c,o={}){
+  const A=new THREE.Vector3(...a),E=new THREE.Vector3(...b),dir=E.clone().sub(A),len=dir.length();
+  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
+  return this.add(o.cyl?geoCyl(o.segs||6,1):geoBox(),new THREE.Matrix4().compose(A.add(E).multiplyScalar(.5),q,new THREE.Vector3(w,len,d)),c,o.mat);
+ }
+ buildSkinned(bones){
+  const mesh=new THREE.SkinnedMesh(mergeParts(this.lists.lit),MAT.lit);
+  mesh.add(bones[0]);mesh.bind(new THREE.Skeleton(bones));return mesh;
+ }
+ box(x,y,z,w,h,d,c,o={}){return this.add(geoBox(),xform(x,y,z,o.rot,w,h,d),c,o.mat)}
+ cyl(x,y,z,r,h,c,o={}){return this.add(geoCyl(o.seg||10,1),xform(x,y,z,o.rot,r,h,r),c,o.mat)}
+ cone(x,y,z,h,rb,rt,c,o={}){return this.add(geoCyl(o.seg||10,+(rt/rb).toFixed(3)),xform(x,y,z,o.rot,rb,h,rb),c,o.mat)}
+ ball(x,y,z,r,c,o={}){const s=o.scale||[1,1,1];return this.add(geoSph(o.w||12,o.h||8),xform(x,y,z,o.rot,r*s[0],r*s[1],r*s[2]),c,o.mat)}
+ torus(x,y,z,r,tube,c,o={}){const s=o.scale||[1,1,1];return this.add(geoTor(tube/r,o.arc||Math.PI*2,o.rs||6,o.ts||20),xform(x,y,z,o.rot,r*s[0],r*s[1],r*s[2]),c,o.mat)}
+ plane(x,y,z,w,h,c,o={}){return this.add(geoPlane(),xform(x,y,z,o.rot||[-90,0,0],w,h,1),c,o.mat)}
+ tri(a,b,c,col,o={}){return this.add(geoTri(a,b,c),new THREE.Matrix4(),col,o.mat)}
+ group(x,y,z,rot,fn){const prev=this.base,m=xform(x,y,z,rot,1,1,1);this.base=prev?prev.clone().multiply(m):m;fn();this.base=prev;return this}
+ build(){
+  const g=new THREE.Group();
+  for(const [k,parts] of Object.entries(this.lists)){if(!parts.length)continue;const mesh=new THREE.Mesh(mergeParts(parts),MAT[k]||MAT.lit);mesh.name='batch_'+k;g.add(mesh)}
+  return g;
+ }
+}
+function mergeParts(parts){
+ let nv=0,ni=0;
+ for(const p of parts){const n=p.geo.attributes.position.count;nv+=n;ni+=p.geo.index?p.geo.index.count:n}
+ const pos=new Float32Array(nv*3),nor=new Float32Array(nv*3),col=new Float32Array(nv*3),idx=new Uint32Array(ni);
+ const v=new THREE.Vector3(),n=new THREE.Vector3(),nm=new THREE.Matrix3(),c=new THREE.Color();
+ let vo=0,io=0;
+ for(const p of parts){
+  const g=p.geo,P=g.attributes.position,N=g.attributes.normal,cnt=P.count;
+  nm.getNormalMatrix(p.m);c.set(p.color);
+  for(let i=0;i<cnt;i++){
+   v.fromBufferAttribute(P,i).applyMatrix4(p.m);n.fromBufferAttribute(N,i).applyMatrix3(nm).normalize();
+   let ao=1;if(p.ao){const t=Math.max(0,Math.min(1,v.y/1.5));ao=.66+.34*t*t*(3-2*t)}
+   const k=(vo+i)*3;pos[k]=v.x;pos[k+1]=v.y;pos[k+2]=v.z;nor[k]=n.x;nor[k+1]=n.y;nor[k+2]=n.z;col[k]=c.r*ao;col[k+1]=c.g*ao;col[k+2]=c.b*ao;
+  }
+  if(g.index){const I=g.index.array;for(let i=0;i<I.length;i++)idx[io++]=I[i]+vo}else for(let i=0;i<cnt;i++)idx[io++]=vo+i;
+  vo+=cnt;
+ }
+ const geo=new THREE.BufferGeometry();
+ geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+ geo.setAttribute('normal',new THREE.BufferAttribute(nor,3));
+ geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+ geo.setIndex(new THREE.BufferAttribute(idx,1));geo.computeBoundingSphere();
+ if(parts.some(p=>p.bone>=0)){
+  const si=new Uint16Array(nv*4),sw=new Float32Array(nv*4);let o=0;
+  for(const p of parts){const cnt=p.geo.attributes.position.count;for(let i=0;i<cnt;i++){si[(o+i)*4]=Math.max(0,p.bone);sw[(o+i)*4]=1}o+=cnt}
+  geo.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(si,4));geo.setAttribute('skinWeight',new THREE.Float32BufferAttribute(sw,4));
+ }
+ return geo;
+}
+function cvRounded(ctx,x,y,w,h,r,fill,border,lw=3){
+ ctx.beginPath();if(typeof ctx.roundRect==='function')ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h);
+ if(fill){ctx.fillStyle=fill;ctx.fill()}
+ if(border){ctx.lineWidth=lw;ctx.strokeStyle=border;ctx.stroke()}
+}
+function cvText(ctx,str,x,y,maxWidth,font=55,color='#fff8e9',align='center',lh=70,maxLines=3){
+ ctx.save();ctx.direction='rtl';ctx.textAlign=align;ctx.textBaseline='middle';ctx.font=`700 ${font}px Arial, Tahoma, sans-serif`;ctx.fillStyle=color;
+ const parts=String(str).split(/\s+/),lines=[];let line='';
+ for(const word of parts){const trial=line?line+' '+word:word;if(ctx.measureText(trial).width>maxWidth&&line){lines.push(line);line=word}else line=trial}
+ if(line)lines.push(line);
+ if(lines.length>maxLines){lines.length=maxLines;let end=lines[maxLines-1];while(ctx.measureText(end+'…').width>maxWidth&&end.length>1)end=end.slice(0,-1);lines[maxLines-1]=end+'…'}
+ const first=y-((lines.length-1)*lh)/2;
+ lines.forEach((t,i)=>ctx.fillText(t,x,first+i*lh,maxWidth));ctx.restore();
+}
+function drawFlag(c,cx,cy,w,h){
+ const l=cx-w/2,t=cy-h/2;c.fillStyle='#ef3340';c.fillRect(l,t,w*.25,h);
+ ['#009739','#ffffff','#111111'].forEach((col,i)=>{c.fillStyle=col;c.fillRect(l+w*.25,t+i*h/3,w*.75,h/3+1)});
+}
+function makeSign(lines,w,h,opt={}){
+ const cw=1024,ch=Math.max(64,Math.round(cw*h/w));
+ const cv=document.createElement('canvas');cv.width=cw;cv.height=ch;const c=cv.getContext('2d');
+ const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,transparent:true,toneMapped:false,fog:opt.fog!==false,side:opt.double?THREE.DoubleSide:THREE.FrontSide}));
+ mesh.userData.draw=ls=>{
+  c.clearRect(0,0,cw,ch);
+  cvRounded(c,6,6,cw-12,ch-12,Math.min(60,ch*.2),opt.bg||'#123a33',opt.border||'#e2c07f',10);
+  const total=ls.reduce((s,l)=>s+l.size,0);let y=ch*(1-total)/2;
+  for(const l of ls){
+   const fs=Math.round(l.size*ch*.78);c.save();c.direction='rtl';c.textAlign='center';c.textBaseline='middle';
+   let f=fs;c.font=`700 ${f}px Arial, Tahoma, sans-serif`;while(c.measureText(l.t).width>cw*.88&&f>10){f-=2;c.font=`700 ${f}px Arial, Tahoma, sans-serif`}
+   c.fillStyle=l.color||'#fff1d0';c.fillText(l.t,cw/2,y+l.size*ch/2);c.restore();y+=l.size*ch;
+  }
+  tex.needsUpdate=true;
+ };
+ mesh.userData.draw(lines);return mesh;
+}
+function placeSign(root,lines,w,h,x,y,z,rotY=0,opt){const s=makeSign(lines,w,h,opt);s.position.set(x,y,z);s.rotation.y=rotY*D2R;root.add(s);return s}
+
+function collider(world,cx,cz,w,d){colliders[world].push({x0:cx-w/2,x1:cx+w/2,z0:cz-d/2,z1:cz+d/2})}
+function pushOut(world,x,z,r){
+ for(const b of colliders[world]){
+  const qx=Math.max(b.x0,Math.min(x,b.x1)),qz=Math.max(b.z0,Math.min(z,b.z1));
+  const dx=x-qx,dz=z-qz,d2=dx*dx+dz*dz;
+  if(d2>=r*r)continue;
+  if(d2>1e-8){const d=Math.sqrt(d2),k=(r-d)/d;x+=dx*k;z+=dz*k}
+  else{const l=x-b.x0,ri=b.x1-x,t=z-b.z0,bo=b.z1-z,m=Math.min(l,ri,t,bo);if(m===l)x=b.x0-r;else if(m===ri)x=b.x1+r;else if(m===t)z=b.z0-r;else z=b.z1+r}
+ }
+ const B=BOUNDS[world];return{x:Math.max(B.x0,Math.min(B.x1,x)),z:Math.max(B.z0,Math.min(B.z1,z))};
+}
+function blocked(world,x,z,r=.3){
+ const B=BOUNDS[world];if(x<B.x0||x>B.x1||z<B.z0||z>B.z1)return true;
+ for(const b of colliders[world])if(x>b.x0-r&&x<b.x1+r&&z>b.z0-r&&z<b.z1+r)return true;
+ return false;
+}
+
+const PALS=[
+ {wall:'#d9c39d',base:'#b39870',trim:'#efe3ca',shade:'#a58b67',wood:'#6b4a2f',wood2:'#8b6542'},
+ {wall:'#cfb28a',base:'#a88c66',trim:'#e8d6b5',shade:'#987d5b',wood:'#5e3f27',wood2:'#80603d'},
+ {wall:'#e2cfac',base:'#bca37b',trim:'#f4ead3',shade:'#ab9271',wood:'#704c30',wood2:'#966e48'}];
+const ST={mat:'stone'};
+function pointedArch(B,x,y0,z,w,h,col,d=.04,mat='stone'){
+ B.box(x,y0+h/2,z,w,h,d,col,{mat});
+ const zf=z+d/2+.002;B.tri([x-w/2,y0+h-.002,zf],[x+w/2,y0+h-.002,zf],[x,y0+h+w*.45,zf],col,{mat});
+}
+function roofline(B,w,d,h,pal){
+ const f=d/2;
+ B.box(0,h-.12,0,w+.18,.14,d+.18,pal.trim,ST);
+ B.box(0,h+.22,f-.08,w,.44,.16,pal.wall,ST);B.box(0,h+.22,-f+.08,w,.44,.16,pal.wall,ST);
+ for(const sx of [-1,1])B.box(sx*(w/2-.08),h+.22,0,.16,.44,d-.32,pal.wall,ST);
+ const n=Math.max(3,Math.round(w/.6)),m=Math.max(3,Math.round(d/.6));
+ for(let i=0;i<n;i++){const px=-w/2+.3+i*(w-.6)/(n-1);for(const sz of [-1,1])B.cone(px,h+.6,sz*(f-.08),.32,.17,0,pal.wall,{seg:4,rot:[0,45,0],mat:'stone'})}
+ for(const sx of [-1,1])for(let i=1;i<m-1;i++)B.cone(sx*(w/2-.08),h+.6,-f+.3+i*(d-.6)/(m-1),.32,.17,0,pal.wall,{seg:4,rot:[0,45,0],mat:'stone'});
+ const r=Math.max(4,Math.round(w/.75));
+ for(let i=0;i<r;i++)B.cyl(-w/2+.5+i*(w-1)/(r-1),h-.38,f+.13,.05,.3,pal.wood,{rot:[90,0,0],seg:6});
+ for(const sx of [-1,1])for(let i=0;i<5;i++)B.cyl(sx*(w/2+.13),h-.38,-f+.8+i*(d-1.6)/4,.05,.3,pal.wood,{rot:[0,0,90],seg:6});
+ for(const sx of [-1,1])B.box(sx*(w/2-.75),h+.06,f+.3,.13,.1,.62,pal.wood2);
+}
+function doorway(B,x,f,pal){
+ pointedArch(B,x,0,f+.03,1.95,2.5,pal.trim,.08);
+ pointedArch(B,x,0,f+.075,1.5,2.32,pal.shade,.04);
+ for(const s of [-1,1]){
+  B.box(x+s*.36,1.07,f+.11,.69,2.14,.07,pal.wood);
+  for(const [py,ph] of [[.55,.72],[1.52,.9]])B.box(x+s*.36,py,f+.152,.48,ph,.02,pal.wood2);
+  for(let r=0;r<4;r++)for(let c=0;c<2;c++)B.ball(x+s*(.2+c*.32),.32+r*.56,f+.16,.02,'#2e2620',{w:5,h:4});
+  B.torus(x+s*.09,1.08,f+.17,.05,.009,'#b08a3e',{ts:10});
+ }
+ B.box(x,1.07,f+.115,.03,2.14,.075,'#271e17');
+ B.box(x,2.22,f+.12,1.5,.13,.12,pal.wood);
+ for(const k of [-1,0,1])B.tri([x+k*.3-.08,2.36,f+.1],[x+k*.3+.08,2.36,f+.1],[x+k*.3,2.56,f+.1],'#3a2e24');
+ B.box(x,.07,f+.42,2.05,.14,.56,pal.base,ST);
+}
+function windowShutter(B,x,y,f,pal){
+ B.box(x,y,f+.03,1.14,1.34,.06,pal.trim,ST);
+ B.box(x,y,f+.062,.9,1.1,.01,'#2b241d');
+ for(let i=-2;i<=2;i++)B.box(x+i*.17,y,f+.075,.024,1.08,.024,'#3b3a36');
+ for(const yy of [-.2,.2])B.box(x,y+yy,f+.075,.88,.024,.024,'#3b3a36');
+ const a=58*D2R;
+ for(const s of [-1,1]){
+  const cx=x+s*(.45+.215*Math.cos(a)),cz=f+.07+.215*Math.sin(a);
+  B.box(cx,y,cz,.43,1.1,.045,pal.wood2,{rot:[0,-s*58,0]});
+  for(let k=0;k<4;k++)B.box(cx,y-.39+k*.26,cz,.44,.03,.06,pal.wood,{rot:[0,-s*58,0]});
+ }
+ B.box(x,y+.72,f+.11,1.34,.1,.2,pal.wood);
+ B.box(x,y-.71,f+.09,1.24,.07,.16,pal.trim,ST);
+ for(const k of [-1,0,1])B.tri([x+k*.26-.07,y+.86,f+.006],[x+k*.26+.07,y+.86,f+.006],[x+k*.26,y+1.01,f+.006],'#3a2e24');
+}
+function upperFloor(B,w,d,h,pal){
+ const uw=w*.6,ud=d*.5,uh=3,uz=-d/2+ud/2+.25,uf=uz+ud/2;
+ B.box(0,h+uh/2,uz,uw,uh,ud,pal.wall,ST);
+ for(const sx of [-1,1])B.box(sx*(uw/2-.15),h+uh/2,uf+.035,.3,uh,.07,pal.trim,ST);
+ B.group(0,h,uz,null,()=>roofline(B,uw,ud,uh,pal));
+ const bz=uf+.38,y0=h;
+ B.box(0,y0+.78,bz,2.1,.12,.8,pal.wood);
+ B.box(0,y0+2.48,bz,2.25,.12,.86,pal.wood);
+ B.box(0,y0+1.62,bz-.05,1.95,1.6,.62,'#2c241c');
+ for(let i=-4;i<=4;i++)B.box(i*.23,y0+1.62,bz+.39,.03,1.6,.03,pal.wood2);
+ for(let j=0;j<7;j++)B.box(0,y0+.92+j*.23,bz+.39,1.95,.03,.03,pal.wood2);
+ for(const sx of [-1,1]){
+  B.box(sx*1.0,y0+1.62,bz,.08,1.72,.8,pal.wood);
+  for(let j=0;j<7;j++)B.box(sx*1.0,y0+.92+j*.23,bz,.09,.03,.7,pal.wood2);
+  B.box(sx*.7,y0+.5,uf+.22,.08,.5,.08,pal.wood,{rot:[-38,0,0]});
+ }
+ for(const sx of [-1,1])pointedArch(B,sx*(uw/2-.62),y0+1.0,uf+.015,.5,1.05,'#3a2f25',.03);
+}
+function barjeel(B,x,z,y0,H,pal,s=2.3){
+ B.box(x,y0+H/2,z,s,H,s,pal.wall,ST);
+ for(let k=0;k<4;k++)B.group(x,0,z,[0,k*90,0],()=>{
+  for(const c of [-1,0,1])pointedArch(B,c*s*.28,y0+H*.46,s/2+.005,s*.17,H*.34,'#3a2f25',.03);
+  B.box(0,y0+H*.42,s/2+.02,s*.92,.08,.06,pal.trim,ST);
+  for(const sx of [-1,1])B.box(sx*(s/2-.07),y0+H*.5,s/2+.02,.14,H*.98,.05,pal.trim,ST);
+  for(let i=0;i<4;i++)B.cone(-s/2+.25+i*(s-.5)/3,y0+H+.2,s/2-.05,.36,.16,0,pal.wall,{seg:4,rot:[0,45,0],mat:'stone'});
+ });
+ B.box(x,y0+H-.05,z,s+.25,.16,s+.25,pal.trim,ST);
+ B.box(x,y0+H+.04,z,s-.25,.02,s-.25,'#2b241d');
+ B.box(x,y0+H+.3,z,s*1.05,.05,.05,pal.wood,{rot:[0,45,0]});B.box(x,y0+H+.3,z,s*1.05,.05,.05,pal.wood,{rot:[0,-45,0]});
+ B.cyl(x,y0+H*.86,z,.045,s+1.1,pal.wood,{rot:[0,0,90],seg:6});
+ B.cyl(x,y0+H*.86+.25,z,.045,s+1.1,pal.wood,{rot:[90,0,0],seg:6});
+ B.cyl(x,y0+H*.3,z,.045,s+.9,pal.wood,{rot:[0,0,90],seg:6});
+}
+function arish(B,x,z,y0,pal){
+ for(const [px,pz] of [[-1.3,-1],[1.3,-1],[-1.3,1],[1.3,1]])B.cyl(x+px,y0+1.1,z+pz,.06,2.2,pal.wood,{seg:6});
+ for(let i=0;i<10;i++)B.box(x-1.35+i*.3,y0+2.24,z,.26,.06,2.4,i%2?'#a98654':'#b8975f');
+ for(let i=0;i<10;i++)B.box(x-1.35+i*.3,y0+1.1,z-1.02,.27,2.1,.05,i%2?'#9c7b4b':'#ae8c58');
+}
+function house(B,o={}){
+ const w=o.w||8,d=o.d||7,h=o.h||4.2,pal=o.pal||PALS[0],f=d/2;
+ B.ao=true;
+ B.box(0,.2,0,w+.14,.4,d+.14,pal.base,ST);
+ B.box(0,h/2,0,w,h,d,pal.wall,ST);
+ for(const sx of [-1,1])for(const sz of [-1,1])B.box(sx*(w/2-.15),h/2,sz*(f+.035),.34,h,.07,pal.trim,ST);
+ roofline(B,w,d,h,pal);
+ doorway(B,0,f,pal);
+ for(const sx of [-1,1])windowShutter(B,sx*w*.31,1.45,f,pal);
+ for(const sx of [-1,1])for(const k of [-1,1])pointedArch(B,sx*w*.31+k*.33,2.62,f+.015,.38,.62,pal.shade,.03);
+ for(const sx of [-1,1])for(let i=0;i<3;i++)B.group(sx*(w/2),0,-f+1.3+i*(d-2.6)/2,[0,sx*90,0],()=>pointedArch(B,0,2.4,.01,.36,.7,'#3a2f25',.03));
+ if(o.type==='two')upperFloor(B,w,d,h,pal);
+ else if(o.type==='tower')barjeel(B,-w/2+1.35,-f+1.35,h,4.6,pal,2.3);
+ else arish(B,w*.18,-f+1.9,h,pal);
+ B.ao=false;
+}
+function windTower(B,x,z,world,rotY=0){
+ const pal=PALS[1];B.ao=true;
+ B.group(x,0,z,[0,rotY,0],()=>{
+  B.box(0,.2,0,4.4,.4,4.4,pal.base,ST);B.box(0,1.8,0,4.2,3.6,4.2,pal.wall,ST);
+  for(const sx of [-1,1])for(const sz of [-1,1])B.box(sx*1.95,1.8,sz*2.135,.34,3.6,.07,pal.trim,ST);
+  roofline(B,4.2,4.2,3.6,pal);
+  pointedArch(B,0,0,2.13,1.1,2.1,pal.shade,.06);B.box(0,1,2.17,.8,2,.05,pal.wood);
+  barjeel(B,0,0,3.6,6.2,pal,2.8);
+ });
+ B.ao=false;collider(world,x,z,4.6,4.6);
+}
+function mosque(B,x,z,rotY,world){
+ const pal={...PALS[2],wall:'#ece2cc',trim:'#f8f2e4',shade:'#b7a17d'};B.ao=true;
+ B.group(x,0,z,[0,rotY,0],()=>{
+  B.box(0,.2,0,6.6,.4,6.6,pal.base,ST);B.box(0,2.2,0,6.2,4.4,6.2,pal.wall,ST);
+  for(const sx of [-1,1])for(const sz of [-1,1])B.box(sx*2.95,2.2,sz*3.135,.34,4.4,.07,pal.trim,ST);
+  roofline(B,6.2,6.2,4.4,pal);
+  pointedArch(B,0,0,3.12,1.7,2.5,pal.trim,.08);pointedArch(B,0,0,3.16,1.3,2.3,pal.shade,.04);
+  B.box(0,1.05,3.19,1.1,2.1,.05,pal.wood);
+  for(const sx of [-1,1])pointedArch(B,sx*1.95,1.3,3.11,.7,1.3,'#3a2f25',.03);
+  B.cyl(0,4.8,0,1.7,.8,pal.wall,{seg:24,mat:'stone'});
+  B.ball(0,5.15,0,1.68,pal.trim,{scale:[1,.92,1],w:24,h:12,mat:'stone'});
+  B.cyl(0,6.85,0,.04,.45,'#c9a24a',{seg:6});B.ball(0,7.1,0,.07,'#d9b45a',{w:8,h:6});
+  B.torus(0,7.32,0,.15,.028,'#d9b45a',{arc:Math.PI*1.35,rot:[0,90,-62],ts:14});
+  const mx=2.3,mz=-2.3;
+  B.cyl(mx,4.2,mz,.78,8.4,pal.wall,{seg:14,mat:'stone'});
+  for(const yy of [2.6,5.4])B.cyl(mx,yy,mz,.84,.14,pal.trim,{seg:14,mat:'stone'});
+  B.cyl(mx,8.5,mz,1.05,.3,pal.trim,{seg:14,mat:'stone'});
+  for(let i=0;i<14;i++){const a=i*Math.PI*2/14;B.box(mx+Math.cos(a)*1.0,8.85,mz+Math.sin(a)*1.0,.06,.45,.06,pal.trim)}
+  B.cyl(mx,9.6,mz,.55,2.0,pal.wall,{seg:14,mat:'stone'});
+  for(let k=0;k<4;k++)B.group(mx,0,mz,[0,k*90+45,0],()=>pointedArch(B,0,9.15,.53,.26,.62,'#3a2f25',.03));
+  B.cone(mx,11.05,mz,.9,.62,0,pal.trim,{seg:14,mat:'stone'});
+  B.cyl(mx,11.65,mz,.03,.4,'#c9a24a',{seg:5});B.ball(mx,11.88,mz,.06,'#d9b45a',{w:8,h:6});
+ });
+ B.ao=false;collider(world,x,z,7,7);
+}
+function palm(B,x,z,world){
+ B.cyl(x,2.65,z,.25,5.3,'#846044',{seg:7});
+ for(let j=0;j<6;j++)B.torus(x,.6+j*.8,z,.27,.04,'#6f4f37',{rot:[90,0,0],ts:10});
+ for(let i=0;i<11;i++){const a=i*Math.PI*2/11;B.cone(x+Math.sin(a)*1.25,5.1,z+Math.cos(a)*1.25,3.4,.42,0,i%2?'#3e6746':'#547b49',{rot:[70,i*360/11,0],seg:5})}
+ for(let j=0;j<5;j++)B.ball(x+.2*Math.cos(j),4.7,z+.2*Math.sin(j),.15,'#8a5831',{w:6,h:5});
+ if(world)collider(world,x,z,.6,.6);
+}
+function lamp(B,x,z){B.cyl(x,1.5,z,.1,3,'#73583b',{seg:6});B.box(x,3.05,z,.42,.5,.42,'#5b4430');B.ball(x,3.05,z,.2,'#ffe3a3',{mat:'glow',w:8,h:6})}
+function flag(B,x,z,scale,root,world){
+ B.cyl(x,3.8*scale,z,.075*scale,7.6*scale,'#d6d8ce',{seg:8});
+ B.ball(x,7.65*scale,z,.13*scale,'#e9c68b',{w:8,h:6});
+ const y=6.7*scale;
+ B.box(x+.42*scale,y,z,.85*scale,1.2*scale,.06,'#ef3340');
+ B.box(x+1.65*scale,y+.4*scale,z,1.6*scale,.4*scale,.075,'#009739');
+ B.box(x+1.65*scale,y,z,1.6*scale,.4*scale,.075,'#ffffff');
+ B.box(x+1.65*scale,y-.4*scale,z,1.6*scale,.4*scale,.075,'#151515');
+ const sb=new Batch();
+ for(const [yy,col] of [[.4,'#009739'],[0,'#ffffff'],[-.4,'#151515']])sb.box(.23*scale,yy*scale,0,.44*scale,.39*scale,.07*scale,col);
+ const streamer=sb.build();streamer.position.set(x+2.52*scale,y,z);root.add(streamer);
+ const ph=(x*31+z*13)%7;
+ onTick(world,t=>{streamer.rotation.y=12*D2R*Math.sin(t*2.1+ph)});
+}
+function boat(x,z,root,world,drift){
+ const B=new Batch();
+ B.ball(0,.5,0,1,'#69462f',{scale:[3.8,.7,1.2],w:16,h:8});
+ B.box(0,.86,0,6.1,.13,1.7,'#a88151');
+ B.box(3.7,1.1,0,.9,.18,.25,'#5a3b27',{rot:[0,0,25]});
+ B.cyl(0,2.9,0,.085,4.3,'#735139',{seg:6});
+ B.cyl(.6,4.4,0,.05,3.6,'#735139',{seg:5,rot:[0,0,70]});
+ B.tri([-.6,1.2,0],[2.4,1.2,0],[-.6,4.9,0],'#f4e1bc');
+ for(let i=0;i<3;i++)B.cyl(-1.6+i*.55,1.05,.3,.18,.32,['#a66b45','#7d5534','#c69a5c'][i],{seg:7});
+ const g=B.build();g.position.set(x,0,z);g.rotation.y=20*D2R;root.add(g);
+ const ph=x*.7;
+ onTick(world,t=>{g.position.y=.06+.06*Math.sin(t*1.35+ph);g.rotation.z=.025*Math.sin(t*1.1+ph);if(drift)g.rotation.y=(19+7*Math.sin(t*.7))*D2R});
+ return g;
+}
+function stall(B,colors){
+ B.ao=true;
+ B.box(0,.5,.55,4,1,1.1,'#94724d');
+ B.box(0,1.02,.55,4.15,.08,1.25,'#7a5a3b');
+ for(const sx of [-1.9,1.9])for(const sz of [-.95,1.05])B.box(sx,1.3,sz,.12,2.6,.12,'#6f5236');
+ for(let i=0;i<5;i++)B.box(-1.68+i*.84,2.68,0,.84,.1,2.6,i%2?colors[0]:'#f1dfb5',{rot:[-6,0,0]});
+ B.box(0,1.55,-.95,3.8,1.1,.05,colors[1]);
+ for(let i=-1;i<=1;i++){B.cyl(i*1.1,1.2,.5,.15,.32,['#a66b45','#d1a364','#6f814a'][i+1],{seg:9});for(let k=0;k<3;k++)B.ball(i*1.1+.38+k*.1,1.13,.72-k*.05,.07,['#d9902f','#b8402e','#e6c25a'][i+1],{w:7,h:5})}
+ for(let k=0;k<3;k++)B.box(-1.15+k*1.15,.55,1.13,.66,.8,.04,['#bc7555','#3f7967','#b7955a'][k]);
+ B.ao=false;
+}
+function majlis(B,world){
+ B.box(-21,.08,-6,8,.15,5,'#a95745');
+ for(let i=0;i<6;i++)B.box(-24.2+i*1.3,.17,-6,.5,.02,4.6,i%2?'#d79b52':'#7a2f2a');
+ for(const x of [-23.5,-21,-18.5])B.box(x,.32,-8,1.5,.4,.8,'#d7ad77');
+ for(const z of [-7,-5])B.box(-24.4,.32,z,.8,.4,1.5,'#d7ad77');
+ B.box(-21,.4,-5.4,2.5,.3,1.5,'#705038');
+ for(const [px,pz] of [[-25,-8.4],[-17,-8.4],[-25,-3.6],[-17,-3.6]])B.cyl(px,1.65,pz,.11,3.3,'#7d6141',{seg:6});
+ B.box(-21,3.3,-6,8.7,.22,5.7,'#a78b60');
+ for(let i=0;i<9;i++)B.box(-24.8+i*.95,3.45,-6,.12,.12,5.6,'#8a6c47');
+ B.box(-21,1.6,-8.6,8.6,3.2,.14,'#b39466');
+ for(let i=0;i<14;i++)B.box(-25.1+i*.63,1.6,-8.5,.05,3.1,.05,'#8f744f');
+ collider(world,-21,-8.6,8.6,.5);
+ B.cyl(-20.5,.76,-5.35,.19,.35,'#d6ad62',{seg:10});
+ B.cone(-20.5,1.05,-5.35,.28,.17,.02,'#e6c078',{seg:10});
+ B.cone(-20.25,.82,-5.35,.06,.03,.02,'#e6c078',{seg:6,rot:[0,0,-70]});
+ B.box(-21.45,.61,-5.3,.68,.12,.42,'#a7784d');
+ for(let i=0;i<5;i++)B.ball(-21.7+i*.12,.71,-5.32,.055,'#8b4b25',{w:6,h:5});
+ for(let i=0;i<3;i++)B.cyl(-21.9+i*.22,.6,-5.75,.045,.08,'#f4ecd8',{seg:6});
+}
+function kuttab(B,x,z){
+ B.box(x,.035,z,3.2,.07,2.4,'#8e3f35');
+ B.box(x,.08,z,2.8,.02,2.0,'#b5644c');
+ B.box(x,.3,z,.55,.42,.36,'#6d4a2c');
+ B.box(x,.53,z,.6,.03,.42,'#7c1f24');
+ B.box(x-.14,.56,z,.27,.02,.38,'#f6ecd2',{rot:[0,0,10]});
+ B.box(x+.14,.56,z,.27,.02,.38,'#f6ecd2',{rot:[0,0,-10]});
+ for(let i=0;i<4;i++)B.box(x-.2+i*.06+(i>1?.08:0),.575,z,.035,.004,.3,'#5a4636');
+ for(const [dx,dz] of [[-1,.6],[1,.6],[0,-.8]])B.box(x+dx,.16,z+dz,.8,.2,.55,'#d7ad77');
+ for(const [px,pz] of [[-1.6,-1.2],[1.6,-1.2],[-1.6,1.2],[1.6,1.2]])B.cyl(x+px,1.3,z+pz,.08,2.6,'#7d6141',{seg:6});
+ B.box(x,2.62,z,3.6,.12,2.8,'#b08a55');
+ for(let i=0;i<7;i++)B.box(x-1.65+i*.55,2.7,z,.08,.08,2.8,'#8d6b40');
+ B.cyl(x+1.1,.2,z-.4,.12,.25,'#c99a4f',{seg:8});B.ball(x+1.1,.38,z-.4,.07,'#ffd27a',{mat:'glow',w:6,h:5});
+}
+
+const SKINS=['#c69a76','#a9785a','#d4aa86','#8c5f44','#b88866'];
+const MUKH=['#7a2f5b','#1f6a64','#8a3f7a','#34508a','#a2482f'];
+const GIRL=['#d8457c','#2f9a8a','#e0a12f','#7a56c2'];
+const BISHT=['#2a2320','#4b3424','#3a2f2a'];
+const PROF={
+ kandura:[[0,.03],[.255,.03],[.265,.12],[.25,.5],[.237,.9],[.236,1.15],[.245,1.3],[.225,1.4],[.17,1.455],[.08,1.49],[0,1.5]],
+ dress:[[0,.03],[.3,.03],[.305,.12],[.275,.5],[.245,.9],[.232,1.15],[.24,1.3],[.222,1.4],[.165,1.455],[.08,1.49],[0,1.5]],
+ bisht:[[.29,.42],[.272,.7],[.262,1.0],[.266,1.2],[.274,1.32],[.252,1.42],[.2,1.475],[.12,1.505]],
+ cap:[[.13,.225],[.127,.245],[.115,.275],[.09,.3],[.05,.315],[0,.319]],
+ ghutra:[[.236,-.11],[.226,-.09],[.197,-.04],[.167,.02],[.148,.07],[.138,.12],[.133,.17],[.13,.225]],
+ shayla:[[.27,-.17],[.252,-.12],[.215,-.07],[.18,-.02],[.155,.04],[.143,.1],[.137,.16],[.133,.225]],
+ bukh:[[.2,-.04],[.175,0],[.152,.05],[.14,.1],[.133,.16],[.131,.225]],
+ kufi:[[.122,.215],[.121,.25],[.105,.285],[.07,.306],[0,.312]],
+};
+const BZ=.74;
+function profR(pr,y){for(let i=1;i<pr.length;i++){const [r1,y1]=pr[i-1],[r2,y2]=pr[i];if(y1!==y2&&y>=Math.min(y1,y2)&&y<=Math.max(y1,y2))return r1+(r2-r1)*(y-y1)/(y2-y1)}return pr[pr.length-1][0]}
+function shell(B,pts,col,openDeg,o={}){
+ const op=openDeg*D2R,ps=Math.PI+op/2,pl=Math.PI*2-op;
+ B.lathe(pts,0,0,0,col,{...o,phiStart:ps,phiLength:pl});
+ B.lathe(pts.slice().reverse().map(([r,y])=>[Math.max(0,r-.005),y]),0,0,0,col,{...o,phiStart:ps,phiLength:pl});
+}
+function profStrip(B,pr,zs,phiDeg,y0,y1,w,d,col,off=.006){
+ const ys=[y0,...pr.map(p=>p[1]).filter(y=>y>y0&&y<y1),y1],ph=phiDeg*D2R;
+ const P=y=>{const r=profR(pr,y)+off;return [Math.sin(ph)*r,y,Math.cos(ph)*r*zs]};
+ for(let i=1;i<ys.length;i++)B.seg(P(ys[i-1]),P(ys[i]),w,d,col);
+}
+function npc(x,z,kind='man',action='idle',parent,rotation=0,opt={}){
+ const root=new THREE.Group();root.position.set(x,0,z);root.rotation.y=rotation*D2R;parent.add(root);
+ const hash=Math.abs(Math.round(x*7+z*3));
+ const woman=kind==='woman',child=kind==='child',man=kind==='man';
+ const girl=child&&(opt.girl!==undefined?opt.girl:hash%2===1);
+ const elder=man&&(opt.elder!==undefined?opt.elder:hash%5===0);
+ const shayla=woman&&(opt.shayla!==undefined?opt.shayla:hash%2===0);
+ const female=woman||girl,isFlag=!!opt.flag;
+ const skin=SKINS[hash%SKINS.length],skinDark=new THREE.Color(skin).multiplyScalar(.8);
+ const hairCol=elder?'#c9c4ba':'#241b17',bishtCol=BISHT[hash%3];
+ const robe=woman?(shayla?'#1b191d':MUKH[hash%MUKH.length]):girl?GIRL[hash%GIRL.length]:child?'#f3ecdd':['#f8f6f0','#f1ede3','#e9e2d2'][hash%3];
+ const gold='#d8ad4e',cuff=female?(shayla?'#8a6a2e':gold):new THREE.Color(robe).multiplyScalar(.9);
+ const prof=female?PROF.dress:PROF.kandura;
+ const bones=[];
+ const mk=(par,bx,by,bz,rz=0)=>{const b=new THREE.Bone();b.position.set(bx,by,bz);b.rotation.order='YXZ';b.rotation.z=rz*D2R;if(par)par.add(b);bones.push(b);return b};
+ const bBody=mk(null,0,0,0),bHead=mk(bBody,0,1.5,0),bArmL=mk(bBody,-.2,1.4,0,-8),bArmR=mk(bBody,.2,1.4,0,8),bLegL=mk(bBody,-.09,.8,0),bLegR=mk(bBody,.09,.8,0);
+ const bFlag=isFlag?mk(bArmR,0,-.6,0,-8):null;
+ const B=new Batch(),fz=(y,off=0)=>-(profR(prof,y)*BZ+off);
+ B.bone=0;
+ B.lathe(prof,0,0,0,robe,{seg:18,scale:[1,1,BZ]});
+ if(female){
+  if(shayla){
+   for(const s of [-1,1])profStrip(B,prof,BZ,180+s*7,.1,1.45,.014,.008,'#8a6a2e');
+   B.torus(0,.075,0,.3,.022,MUKH[(hash+2)%MUKH.length],{rot:[90,0,0],scale:[1,BZ,1],ts:24});
+  }else{
+   profStrip(B,prof,BZ,180,.1,1.46,.085,.01,gold);
+   for(let y=.22;y<1.4;y+=.16)B.ball(0,y,fz(y,.017),.013,'#f6dc9d',{w:6,h:4});
+   B.torus(0,.14,0,.302,.013,gold,{rot:[90,0,0],scale:[1,BZ,1],ts:24});
+  }
+  const neck=[[-.075,1.475],[-.05,1.43],[0,1.38],[.05,1.43],[.075,1.475]].map(([nx,ny])=>{const r=profR(prof,ny);return [nx,ny,-(BZ*Math.sqrt(Math.max(r*r-nx*nx,0))+.007)]});
+  for(let i=1;i<neck.length;i++)B.seg(neck[i-1],neck[i],.009,.009,'#e8b84a');
+  B.ball(0,1.365,fz(1.365,.014),.018,'#e8b84a',{scale:[1,1.3,.6],w:8,h:6});
+ }else{
+  B.torus(0,1.485,0,.085,.012,new THREE.Color(robe).multiplyScalar(.9),{rot:[90,0,0],scale:[1,BZ,1],ts:18});
+  profStrip(B,prof,BZ,180,1.13,1.47,.012,.008,'#ebe5d8',.008);
+  B.ball(0,1.1,fz(1.1,.022),.016,'#ebe5d8',{scale:[1,1.7,1],w:8,h:6});
+  profStrip(B,prof,BZ,180,.06,1.12,.006,.004,new THREE.Color(robe).multiplyScalar(.93),.003);
+  if(elder){shell(B,PROF.bisht,bishtCol,75,{seg:20,scale:[1,1,.8]});for(const s of [-1,1])profStrip(B,PROF.bisht,.8,180+s*37.5,.42,1.5,.03,.01,'#d4a64a',.004)}
+ }
+ B.bone=1;
+ B.group(0,1.5,0,null,()=>{
+  B.cyl(0,.04,0,.048,.12,skin,{seg:10});
+  B.ball(0,.17,0,.115,skin,{scale:[.95,1.12,1],w:16,h:12});
+  const es=child?1.15:1;
+  for(const s of [-1,1]){
+   const ex=s*.042;
+   B.ball(ex,.183,-.099,.021*es,'#fbf7f0',{scale:[1,.72,.5],w:10,h:6});
+   B.ball(ex,.182,-.108,.0125*es,'#2a1d16',{scale:[1,1,.5],w:8,h:6});
+   B.ball(ex-s*.004,.188,-.114,.0038,'#ffffff',{w:5,h:4});
+   B.box(ex,.214,-.103,.042,.009,.012,hairCol,{rot:[0,0,-s*9]});
+   if(female)B.box(ex,.197,-.106,.044,.006,.006,'#1a1412',{rot:[0,0,-s*5]});
+  }
+  B.ball(0,.152,-.112,.022,skinDark,{scale:[.6,1,.75],w:8,h:6});
+  if(female)B.box(0,.114,-.104,.034,.008,.008,'#a24f5b');
+  else B.torus(0,.118,-.104,.02,.0045,'#7a4a40',{arc:Math.PI,rot:[0,0,180],ts:10});
+  if(man){
+   const bc=elder?'#cfcac0':'#2a211c',st=elder?0:hash%4;
+   if(st<=1)B.ball(0,.083,-.088,.036,bc,{scale:[1.15,1.05,.75],w:10,h:6});
+   if(st===0)for(const s of [-1,1])B.ball(s*.075,.11,-.06,.035,bc,{scale:[.55,1.25,1],w:8,h:6});
+   if(st<=2)B.ball(0,.133,-.108,.024,bc,{scale:[1.25,.32,.45],w:8,h:5});
+   B.lathe(PROF.cap,0,0,0,'#fbfbf6',{seg:18});
+   shell(B,PROF.ghutra,'#f4f3ec',110,{seg:18,scale:[1,1,.92]});
+   B.torus(0,.255,0,.126,.011,'#161616',{rot:[86,0,0],ts:20});
+   B.torus(0,.236,0,.132,.011,'#161616',{rot:[86,0,0],ts:20});
+  }else if(child&&!girl){
+   B.ball(0,.17,.018,.117,hairCol,{scale:[.96,1.1,1],w:14,h:10});
+   for(const s of [-1,1])B.ball(s*.108,.165,0,.026,skin,{scale:[.45,1,.75],w:8,h:6});
+   B.lathe(PROF.kufi,0,0,0,'#f8f4ea',{seg:18});
+   for(let i=0;i<12;i++){const a=i*Math.PI/6;B.ball(Math.sin(a)*.123,.235,Math.cos(a)*.123,.008,'#c9a45a',{w:5,h:4})}
+  }else if(girl){
+   const hood=['#b23a6f','#1d7f73','#c98a1c','#5d3fa0'][(hash+1)%4];
+   B.lathe(PROF.cap,0,0,0,hood,{seg:18});shell(B,PROF.bukh,hood,105,{seg:18,scale:[1,1,.95]});
+   for(const s of [-1,1])for(const yy of [.21,.16,.11,.06,.01,-.03]){const ph=(180+s*52.5)*D2R,r=profR(PROF.bukh,yy)+.004;B.ball(Math.sin(ph)*r,yy,Math.cos(ph)*r*.95,.008,'#f2cf6a',{w:5,h:4})}
+  }else if(shayla){
+   B.lathe(PROF.cap,0,0,0,'#131114',{seg:18});shell(B,PROF.shayla,'#18161a',100,{seg:18,scale:[1,1,.95]});
+  }else{
+   B.ball(0,.185,.028,.123,'#22191a',{scale:[.98,1.08,1],w:16,h:12});
+   for(const s of [-1,1])B.ball(s*.07,.255,-.065,.05,'#22191a',{scale:[1,.55,.75],w:10,h:6});
+   B.ball(0,.02,.075,.1,'#22191a',{scale:[1.15,2.1,.55],w:12,h:10});
+   for(const s of [-1,1]){B.ball(s*.112,.12,-.005,.011,'#e8b84a',{w:6,h:4});B.ball(s*.112,.093,-.005,.016,'#e8b84a',{scale:[1,1.3,1],w:6,h:5})}
+   B.ball(0,.268,-.087,.012,'#e8b84a',{w:6,h:5});
+  }
+ });
+ for(const s of [-1,1]){
+  B.bone=s<0?2:3;
+  B.group(s*.2,1.4,0,[0,0,s*8],()=>{
+   const sc=elder?bishtCol:robe,wide=elder?1.35:1;
+   B.ball(0,0,0,.068*wide,sc,{w:10,h:8});
+   B.cone(0,-.15,0,.3,.06*wide,.068*wide,sc,{seg:10});
+   B.cone(0,-.43,0,.26,.056*wide,.06*wide,sc,{seg:10});
+   B.torus(0,-.555,0,.055*wide,.01,elder?'#d4a64a':cuff,{rot:[90,0,0],ts:14});
+   if(woman&&!shayla)B.cyl(0,-.57,0,.046,.03,'#e8b84a',{seg:10});
+   B.ball(0,-.605,-.004,.04,skin,{scale:[.75,1.15,.6],w:10,h:8});
+   B.ball(-s*.018,-.585,-.026,.014,skin,{w:6,h:5});
+   if(isFlag&&s===1){
+    B.bone=6;
+    B.group(0,-.6,0,[0,0,-8],()=>{
+     B.cyl(0,.42,0,.012,1.0,'#f0dfb9',{seg:6});B.ball(0,.93,0,.022,'#e9c68b',{w:6,h:5});
+     for(const [yy,c] of [[.82,'#009739'],[.70,'#ffffff'],[.58,'#151515']])B.box(.33,yy,0,.58,.12,.012,c);
+     B.box(.045,.70,.004,.09,.36,.02,'#ef3340');
+    });
+   }
+  });
+ }
+ for(const s of [-1,1]){
+  B.bone=s<0?4:5;
+  B.group(s*.09,.8,0,null,()=>{
+   B.cyl(0,-.66,0,.042,.18,robe,{seg:8});
+   B.ball(0,-.757,-.15,.043,skin,{scale:[.85,.45,1.55],w:10,h:6});
+   B.box(0,-.787,-.145,.095,.02,.25,'#5a3e2b');
+   B.box(0,-.762,-.18,.1,.018,.035,'#7a5236');
+  });
+ }
+ const mesh=B.buildSkinned(bones);if(child)mesh.scale.setScalar(.64);root.add(mesh);
+ const arms=[],legs=[];
+ if(action==='walk'||action==='clap')arms.push({g:bArmL,side:-1,flag:null},{g:bArmR,side:1,flag:null});
+ else if(action==='wave')arms.push({g:bArmR,side:1,flag:bFlag});
+ if(action==='walk')legs.push({g:bLegL,side:-1},{g:bLegR,side:1});
+ const rec={root,mover:bBody,head:bHead,arms,legs,action,world:opt.world,phase:(hash%13)*.37,dur:(650+hash%190)/1000,gaze:0,nextGaze:0,radius:child?.3:.42};
+ npcs.push(rec);return rec;
+}
+function faceTo(x,z,tx,tz){return Math.atan2(-(tx-x),-(tz-z))/D2R}
+function animateNPC(n,t,dt){
+ const ph=n.phase;
+ if(n.action==='walk'){
+  const s=Math.sin(t*Math.PI/n.dur+ph);
+  for(const a of n.arms)a.g.rotation.set(a.side*20*s*D2R,0,a.side*8*D2R);
+  for(const l of n.legs)l.g.rotation.x=-l.side*20*s*D2R;
+  n.mover.position.y=.012+.012*Math.sin(t*Math.PI/.41+ph);
+ }else if(n.action==='clap'){
+  const c=(1+Math.sin(t*Math.PI/.38+ph))/2;
+  for(const a of n.arms)a.g.rotation.set(70*D2R,0,-a.side*(8+14*c)*D2R);
+  n.mover.rotation.y=7*D2R*Math.sin(t*Math.PI/1.2+ph);
+ }else if(n.action==='wave'){
+  for(const a of n.arms){
+   if(a.flag){a.g.rotation.z=(150+8*Math.sin(t*Math.PI/.65+ph))*D2R;a.flag.rotation.z=-a.g.rotation.z+10*D2R*Math.sin(t*Math.PI/.65+ph+1)}
+   else a.g.rotation.z=(135+20*Math.sin(t*Math.PI/.47+ph))*D2R;
+  }
+  n.mover.rotation.y=7*D2R*Math.sin(t*Math.PI/1.2+ph);
+ }else n.mover.rotation.y=3*D2R*Math.sin(t*Math.PI/2.8+ph);
+ if(t>=n.nextGaze){
+  n.nextGaze=t+.1;n.root.getWorldPosition(_v);
+  const dx=_h.x-_v.x,dz=_h.z-_v.z,dist=Math.hypot(dx,dz);
+  let yaw=0,o=n.root;while(o&&o.parent&&o!==oldEl.object3D&&o!==modernEl.object3D){yaw+=o.rotation.y;o=o.parent}
+  let rel=Math.atan2(-dx,-dz)-yaw;rel=Math.atan2(Math.sin(rel),Math.cos(rel));
+  n.gaze=dist<5?Math.max(-.85,Math.min(.85,rel)):0;
+ }
+ n.head.rotation.y+=(n.gaze-n.head.rotation.y)*Math.min(1,dt*6);
+}
+function roam(obj,radius,speed,seed,world){const r={obj,home:obj.position.clone(),target:obj.position.clone(),phase:seed*1.618,wait:0,radius,speed,seed,world};chooseRoam(r);roamers.push(r)}
+function chooseRoam(r){r.phase+=2.39996;const rad=r.radius*(.45+.45*Math.abs(Math.sin(r.phase*1.3)));r.target.set(r.home.x+Math.cos(r.phase)*rad,r.home.y,r.home.z+Math.sin(r.phase)*rad);r.wait=0}
+function updateCharacters(t,dt){
+ for(const n of npcs)if(n.world===worldName)animateNPC(n,t,dt);
+ for(const r of roamers){
+  if(r.world!==worldName)continue;
+  const p=r.obj.position,dx=r.target.x-p.x,dz=r.target.z-p.z,d=Math.hypot(dx,dz);
+  if(d<.14){r.wait+=dt*1000;if(r.wait>550+(r.seed%5)*270)chooseRoam(r);continue}
+  const step=Math.min(d,r.speed*dt);p.x+=dx/d*step;p.z+=dz/d*step;
+  const yaw=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(yaw-r.obj.rotation.y),Math.cos(yaw-r.obj.rotation.y));
+  r.obj.rotation.y+=delta*Math.min(1,dt*1000/450);
+ }
+}
+
+function makeEntity(parent,attrs){const e=document.createElement('a-entity');for(const k in attrs)e.setAttribute(k,attrs[k]);parent.appendChild(e);return e}
+function addStar(x,z,world,key){
+ const el=makeEntity(world==='old'?oldEl:modernEl,{position:`${x} 1.85 ${z}`,geometry:'primitive:octahedron;radius:.36',material:'color:#ffd878;metalness:.45;roughness:.3;emissive:#b48027;emissiveIntensity:.55',class:'interactive'});
+ const item={x,z,key,el,world,collect(){
+  if(!started||transitioning||visitedStars.has(key)||worldName!==world)return;
+  visitedStars.add(key);stars++;el.setAttribute('visible',false);
+  $('collectibleStatus').textContent='نجوم الاتحاد: '+ar(stars)+' / ٦';
+  tone(790,.13);setTimeout(()=>tone(1040,.17),110);
+  sparkleBurst(18);achievement('⭐ نجمة الاتحاد','جمعت '+ar(stars)+' من ٦ نجوم');
+  if(stars===6)setTimeout(()=>achievement('🏅 وسام المستكشف','جمعت كل نجوم الاتحاد!'),1200);
+  drawWrist();
+ }};
+ starItems.push(item);
+ el.addEventListener('click',()=>item.collect());
+ const ph=x+z;
+ onTick(world,t=>{el.object3D.rotation.y=t*1.5;el.object3D.position.y=1.85+.17*Math.sin(t*2.7+ph)});
+ vrTargets.push({el,radius:.6,pos:v=>el.object3D.getWorldPosition(v),enabled:()=>worldName===world&&el.object3D.visible,onSelect:()=>item.collect()});
+}
+function heritageSpot(x,z,key,title,description,y=1.35){
+ const el=makeEntity(oldEl,{position:`${x} ${y} ${z}`,geometry:'primitive:sphere;radius:.3;segmentsWidth:16;segmentsHeight:12',material:'shader:flat;color:#ffe8a9',class:'interactive'});
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.46,.022,6,32),new THREE.MeshBasicMaterial({color:'#ffd27a'}));el.object3D.add(ring);
+ const item={key,title,description,el};heritageItems.push(item);
+ el.addEventListener('click',()=>showHeritageInfo(item));
+ onTick('old',t=>{el.object3D.position.y=y+.1*Math.sin(t*2+x);ring.rotation.set(Math.PI/2+.35*Math.sin(t*.9+z),t*1.3,0)});
+ vrTargets.push({el,radius:.6,pos:v=>el.object3D.getWorldPosition(v),enabled:()=>worldName==='old'&&el.object3D.visible,onSelect:()=>showHeritageInfo(item)});
+}
+function makeMarker(){
+ markerEl=makeEntity(scene,{id:'questMarker'});
+ const ringEl=makeEntity(markerEl,{position:'0 2 0',geometry:'primitive:torus;radius:.55;radiusTubular:.12;segmentsTubular:28;segmentsRadial:8',material:'color:#f5c878;emissive:#a8741e;emissiveIntensity:.45',class:'interactive'});
+ const orbEl=makeEntity(markerEl,{position:'0 2 0',geometry:'primitive:sphere;radius:.36;segmentsWidth:16;segmentsHeight:12',material:'shader:flat;color:#fff2c6',class:'interactive'});
+ ringEl.addEventListener('click',showQuestion);orbEl.addEventListener('click',showQuestion);
+ const B=new Batch();
+ B.cyl(0,.5,0,.45,1,'#735d43',{seg:12});B.cyl(0,1.02,0,.55,.08,'#d6b06a',{seg:12});
+ B.torus(0,.04,0,1.2,.05,'#ffd88a',{rot:[90,0,0],mat:'glow',ts:36});
+ markerEl.object3D.add(B.build());
+ const bg=new THREE.CylinderGeometry(.34,.34,60,16,8,true),bp=bg.attributes.position,bc=new Float32Array(bp.count*4),gold=new THREE.Color('#ffc94d');
+ for(let i=0;i<bp.count;i++){const k=(bp.getY(i)+30)/60;bc[i*4]=gold.r;bc[i*4+1]=gold.g;bc[i*4+2]=gold.b;bc[i*4+3]=.75*Math.pow(1-k,1.6)}
+ bg.setAttribute('color',new THREE.BufferAttribute(bc,4));
+ const beam=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:.8,depthWrite:false,fog:false,side:THREE.DoubleSide}));
+ beam.position.y=31;markerEl.object3D.add(beam);
+ markerSign=makeSign([{t:'التحدي ١',size:.62,color:'#ffe6a8'},{t:'QUEST',size:.3,color:'#fff6d5'}],1.5,.62,{bg:'#123a33e6'});
+ markerSign.position.y=3.15;markerEl.object3D.add(markerSign);
+ onTick('always',t=>{
+  ringEl.object3D.rotation.y=t*.8;orbEl.object3D.position.y=2.05+.16*Math.sin(t*2.4);
+  if(markerEl.object3D.visible){
+   const p=markerEl.object3D.position,near=Math.hypot(_h.x-p.x,_h.z-p.z)<2.6;
+   ringEl.object3D.visible=orbEl.object3D.visible=markerSign.visible=!near;
+   beam.material.opacity=near?.18:.7+.2*Math.sin(t*3);
+   markerSign.rotation.y=Math.atan2(_h.x-p.x,_h.z-p.z);
+  }
+ });
+ vrTargets.push({el:markerEl,radius:.95,pos:v=>markerEl.object3D.getWorldPosition(v).add(_v2.set(0,2,0)),enabled:()=>markerEl.object3D.visible,onSelect:()=>showQuestion(),hoverEl:ringEl});
+}
+function placeMarker(){
+ if(!markerEl)return;
+ if(progress>=7&&!retryMode){markerEl.setAttribute('visible',false);return}
+ const spot=retryMode?RETRY_SPOT:QUEST_SPOTS[progress];
+ markerEl.object3D.position.set(spot[0],0,spot[1]);markerEl.setAttribute('visible',true);
+ markerSign.userData.draw([{t:retryMode?'مراجعة':'التحدي '+ar(progress+1),size:.62,color:'#ffe6a8'},{t:'QUEST',size:.3,color:'#fff6d5'}]);
+}
+
+function buildEnvironment(){
+ const B=new Batch();
+ B.plane(0,-.02,-30,420,420,'#d9bc8c',{mat:'stone'});
+ scene.object3D.add(B.build());
+ makeSky();makeFireworks();
+}
+function buildOld(){
+ const B=new Batch(),W='old',root=oldEl.object3D;
+ B.plane(0,.015,-25,8,75,'#e2c99f',{mat:'stone'});
+ for(let z=6;z>-60;z-=2.2){B.box(-4.1,.03,z,.3,.06,1.9,'#cfb487');B.box(4.1,.03,z,.3,.06,1.9,'#cfb487')}
+ const houseTypes=[['single',0],['two',1],['tower',2],['two',2],['single',1],['two',0]];let hi=0;
+ for(const x of [-12,12])for(const z of [-12,-29,-47]){
+  const [type,pi]=houseTypes[hi++];
+  B.group(x,0,z,[0,x<0?90:-90,0],()=>house(B,{type,pal:PALS[pi],h:type==='single'?4.0:4.3}));
+  collider(W,x,z,8.2,8.6);
+ }
+ windTower(B,-18,-21,W,90);windTower(B,18,-39,W,-90);
+ mosque(B,13.6,-58.6,-90,W);
+ for(const p of [[-22,4],[22,4],[-18.5,-16.4],[22,-21],[-18.5,-43],[22,-46],[3,-55]])palm(B,p[0],p[1],W);
+ majlis(B,W);
+ kuttab(B,10.5,-20.5);
+ const stalls=[[-6,-36,'man','idle'],[6,-36,'woman','idle'],[-6,-43,'man','wave'],[6,-43,'man','idle']];
+ stalls.forEach(([x,z,kind,act],i)=>{
+  const rot=x<0?90:-90;
+  B.group(x,0,z,[0,rot,0],()=>stall(B,[['#b44c3f','#2f6d63'],['#3f6fa0','#a55a36'],['#9a7a2d','#5b3f74'],['#2f7a54','#b0483c']][i]));
+  collider(W,x,z,2.6,4.3);
+  npc(x<0?x-.75:x+.75,z,kind,act,root,x<0?-90:90,{world:W});
+ });
+ for(const [x,z] of [[-7.2,-33.2],[7,-39.6],[-19.5,-9.4]])for(let i=0;i<3;i++){
+  B.cyl(x+i*.5-.5,.35,z,.21,.65,i%2?'#b17d51':'#8e5f41',{seg:9});
+  B.torus(x+i*.5-.5,.69,z,.15,.045,'#d1b089',{rot:[90,0,0],ts:12});
+ }
+ B.plane(-34,.03,-38,27,42,'#3b9cb0');
+ B.plane(-18,.04,-38,5,42,'#e7d0a2');
+ collider(W,-34.05,-38,26.9,42);
+ for(let i=0;i<12;i++)B.box(-27+i*.55,.12,-47,.35,.12,1.3,'#a8875b');
+ for(const xx of [-26.8,-24,-21.4])for(const zz of [-47.6,-46.4])B.cyl(xx,.05,zz,.08,.5,'#6f5236',{seg:6});
+ const rip=new Batch();for(const zz of [-23,-32,-41,-50])rip.torus(-33,.08,zz,1.5,.03,'#c0e9e3',{rot:[90,0,0],mat:'ripple',ts:32});
+ root.add(rip.build());
+ onTick(W,t=>{MAT.ripple.opacity=.18+.14*Math.sin(t*1.8)});
+ boat(-29,-36,root,W,false);boat(-35,-51,root,W,true);
+ B.cyl(-19.2,.22,-48.6,.32,.42,'#a8844f',{seg:10});
+ for(let i=0;i<7;i++)B.ball(-19.2+Math.cos(i)*.15,.47,-48.6+Math.sin(i)*.15,.05,'#f7f1e6',{w:6,h:5});
+ for(let i=0;i<4;i++)B.ball(-18.5+i*.18,.06,-49.3,.11,'#8b8174',{scale:[1,.35,.8],w:7,h:5});
+ for(const p of [[-3,-7],[3,-18],[-3,-32],[3,-48]])lamp(B,p[0],p[1]);
+ flag(B,4,-5,.6,root,W);
+ for(const [x,z,sx,sy,sz] of [[-75,-95,30,7,20],[70,-100,34,9,22],[-40,-130,40,10,18],[30,-135,45,12,20],[-95,-40,25,6,30],[95,-30,25,7,30],[-80,40,30,6,20],[80,45,30,6,20],[0,-150,50,9,18]])B.ball(x,-1,z,1,'#d6b27c',{scale:[sx,sy,sz],w:16,h:8});
+ for(const sx of [-2.6,2.6])B.cyl(sx,1.6,-57.3,.1,3.2,'#6f5236',{seg:6});
+ placeSign(root,[{t:'الفريج القديم',size:.6},{t:'OLD UAE · BEFORE 1971',size:.3,color:'#f0d9a6'}],5.6,1.5,0,3.6,-57.2);
+ root.add(B.build());
+ heritageSpot(-21,-5.1,'dallah','الدلّة العربية','ترمز الدلّة والقهوة العربية إلى الكرم وحسن الضيافة في المجتمع الإماراتي.');
+ heritageSpot(-3.4,-35,'souq','السوق القديم','كان السوق مكاناً للبيع والشراء وتبادل الأخبار، وازدهرت فيه الحرف والتجارة.');
+ heritageSpot(-28.5,-36,'dhow','المحمل البحري','استُخدمت المحامل الخشبية في الصيد والتجارة ونقل الناس والبضائع عبر الخليج.',2.0);
+ heritageSpot(-3.4,-42.6,'weaving','النسيج التقليدي','صُنعت الأقمشة والسلال والأدوات التراثية بمهارات يدوية تناقلتها الأجيال.');
+ heritageSpot(4,-12,'lantern','الفانوس التقليدي','أضاءت الفوانيس والمصابيح البيوت والأسواق قبل انتشار الكهرباء.');
+ heritageSpot(-19.6,-47.6,'pearl','الغوص على اللؤلؤ','شكّل الغوص لاستخراج اللؤلؤ مورداً مهماً في منطقة الخليج قبل عصر النفط.');
+ roam(npc(-3,-12,'man','walk',root,180,{world:W}).root,4,.8,3,W);
+ const family=new THREE.Group();family.position.set(2.5,0,-20);root.add(family);
+ npc(.55,0,'woman','walk',family,0,{world:W});npc(-.55,.2,'child','walk',family,0,{world:W});
+ roam(family,2.2,.46,8,W);
+ npc(-22.6,-6.5,'man','idle',root,faceTo(-22.6,-6.5,-21,-5.4),{world:W,elder:true});
+ npc(-19.3,-6.6,'woman','idle',root,faceTo(-19.3,-6.6,-21,-5.4),{world:W,shayla:false});
+ npc(-19.3,-31.5,'man','idle',root,90,{world:W});
+ npc(-19.5,-40.5,'man','idle',root,70,{world:W});
+ npc(-18.4,-49.6,'man','idle',root,120,{world:W});
+ roam(npc(-1.5,-38,'child','walk',root,90,{world:W}).root,2.5,.9,15,W);
+ roam(npc(-2.5,-25,'woman','walk',root,170,{world:W}).root,1.4,.43,29,W);
+ roam(npc(2.5,-44,'man','walk',root,80,{world:W}).root,1.7,.52,41,W);
+ for(const [i,x,z] of [[0,-17.2,-13],[1,6,-29],[2,-18.8,-53.5]])addStar(x,z,W,'heritage'+i);
+}
+function modernTower(B,x,z,h,w,world){
+ B.ao=true;
+ B.box(x,h/2,z,w,h,w,'#718f9a');
+ B.box(x,h+.3,z,w+.6,.6,w+.6,'#415f68');
+ for(let y=1.5;y<h-1;y+=1.7)for(let k=-1;k<=1;k++){
+  B.box(x+k*w*.24,y,z+w/2+.035,w*.16,.8,.07,'#b8d9df',{mat:'win'});
+  B.box(x+k*w*.24,y,z-w/2-.035,w*.16,.8,.07,'#b8d9df',{mat:'win'});
+  B.box(x+w/2+.035,y,z+k*w*.24,.07,.8,w*.16,'#b8d9df',{mat:'win'});
+  B.box(x-w/2-.035,y,z+k*w*.24,.07,.8,w*.16,'#b8d9df',{mat:'win'});
+ }
+ for(const face of [-1,1])for(let j=0;j<4;j++){
+  B.box(x+(j-1.5)*w*.22,h/2,z+face*(w/2+.08),.055,h*.92,.075,'#395c69');
+  B.box(x+face*(w/2+.08),h/2,z+(j-1.5)*w*.22,.075,h*.92,.055,'#395c69');
+ }
+ B.box(x,2,z+w/2+.7,w*.68,.13,1.4,'#e0d3b7');
+ for(let i=0;i<3;i++)B.box(x+(i-1)*w*.19,1.05,z+w/2+.13,w*.16,1.9,.09,'#314c5a');
+ B.ao=false;
+ if(world)collider(world,x,z+.35,w+.3,w+1.1);
+}
+function dubaiLandmarks(B,root,W){
+ const x=0,z=-94;
+ for(const [baseY,h,w] of [[0,13,13],[13,10,10],[23,9,7.6],[32,8,5.5],[40,7,3.8],[47,5,2.2]]){
+  B.box(x,baseY+h/2,z,w,h,w,'#88aeb9');
+  for(let yy=baseY+2;yy<baseY+h-1;yy+=2){B.box(x,yy,z+w/2+.06,w*.74,.23,.09,'#d2e6e6',{mat:'win'});B.box(x+w/2+.06,yy,z,.09,.23,w*.74,'#d2e6e6',{mat:'win'});B.box(x-w/2-.06,yy,z,.09,.23,w*.74,'#d2e6e6',{mat:'win'})}
+ }
+ B.cone(x,56,z,8,1.1,0,'#c4d7d8',{seg:8});
+ B.cyl(x,62,z,.17,5,'#e8d7b4',{seg:6});
+ B.ball(x,64.7,z,.3,'#ffffff',{mat:'glow',w:8,h:6});
+ collider(W,x,z,13.5,13.5);
+ B.group(-34,8,-71,[0,25,0],()=>{
+  B.torus(0,0,0,7,2.25,'#b9c8c7',{rs:12,ts:40});
+  for(let i=0;i<10;i++){const a=i*Math.PI*2/10;B.ball(Math.cos(a)*7,Math.sin(a)*7,1.75,.22,'#f3deb3',{mat:'glow',w:6,h:5})}
+ });
+ collider(W,-34,-71,7,7);
+ B.plane(39,.07,-76,30,35,'#4a9db4');
+ collider(W,39,-76,30,35);
+ B.box(39,2,-76,12,4,12,'#d9d5c9');
+ B.tri([33.5,4,-75.6],[44,4,-75.6],[44,44,-75.6],'#edf0e9');
+ B.tri([34.5,4,-76.6],[44,4,-76.6],[44,40,-76.6],'#cfd6d3');
+ B.box(44.4,26,-76,.9,46,1.1,'#b1b6b5');
+ B.cyl(41.6,36,-75.4,2.2,.3,'#e1e4dc',{seg:16});
+ for(const fx of [-40,-28]){B.box(fx,11,-48,2,22,2,'#d5b15f');collider(W,fx,-48,2.2,2.2)}
+ B.box(-34,22,-48,14,2,2,'#d5b15f');
+ for(let i=0;i<8;i++)B.box(-34,3+i*2.4,-46.9,10,.09,.09,'#f6db91',{mat:'glow'});
+ for(const [xx,zz,hh,ww] of [[-25,-86,28,6],[23,-87,33,7],[-18,-105,36,6],[19,-108,40,7],[-36,-103,25,6],[34,-107,30,6]])modernTower(B,xx,zz,hh,ww,W);
+}
+function festivalEffects(B){
+ for(const z of [-12,-24,-36,-48]){
+  for(const x of [-8,8]){B.cyl(x,4,z,.12,8,'#e1c78e',{seg:8});B.ball(x,8.3,z,.33,'#ffe6a1',{mat:'glow',w:8,h:6})}
+  for(let i=0;i<17;i++){const x=-8+i,y=8.2+1.3*Math.sin(i*Math.PI/16);B.ball(x,y,z,.16,['#ef3340','#ffffff','#009739'][i%3],{mat:'bulb'+(i%3),w:6,h:5})}
+ }
+ for(const z of [-14,-30,-46,-56]){
+  for(let x=-8,i=0;x<=8;x+=2,i++)B.ball(x,7.2-Math.abs(x)*.06,z,.16,['#ef3340','#ffffff','#009739','#f4c66f'][i%4],{mat:'bulb'+(i%3),w:6,h:5});
+  B.box(0,7.2,z,16,.035,.035,'#e5d6b6');
+ }
+ onTick('modern',t=>{for(let i=0;i<3;i++){const k=.55+.45*Math.max(0,Math.sin(t*3.2-i*2.09));MAT['bulb'+i].color.setScalar(k)}});
+}
+function cityCar(root,x,z,seed){
+ const B=new Batch(),shades=['#f2e5da','#c44a42','#d0d8de','#397d72'];
+ B.box(0,.47,0,1.3,.55,2.4,shades[seed%4]);
+ B.box(0,.95,.2,1.05,.44,1.4,'#7899a7');
+ for(const xx of [-.68,.68])for(const zz of [-.76,.78])B.cyl(xx,.27,zz,.27,.15,'#333c42',{rot:[0,0,90],seg:10});
+ for(const xx of [-.4,.4]){B.box(xx,.55,-1.21,.25,.12,.04,'#fff3c4',{mat:'glow'});B.box(xx,.55,1.21,.25,.12,.04,'#d23b2f',{mat:'glow'})}
+ const g=B.build();g.position.set(x,0,z);if(x<0)g.rotation.y=Math.PI;root.add(g);
+ const dir=x<0?-1:1,speed=1.8+seed*.35,minZ=-42,maxZ=5;
+ onTick('modern',(t,dt)=>{
+  let p=g.position.z+dir*speed*dt;if(p>maxZ)p=minZ;if(p<minZ)p=maxZ;g.position.z=p;
+  const edge=Math.min(p-minZ,maxZ-p);g.scale.setScalar(Math.max(.001,Math.min(1,edge/2)));
+ });
+}
+function buildModern(){
+ const B=new Batch(),W='modern',root=modernEl.object3D;
+ B.plane(0,.04,-24,20,80,'#7b8584',{mat:'stone'});
+ for(const x of [-9,-3,3,9])B.plane(x,.055,-24,.13,75,'#f5e7bc');
+ for(let z=2;z>-60;z-=3)B.plane(0,.056,z,.18,1.4,'#f5e7bc');
+ for(const x of [-12.5,12.5])B.plane(x,.05,-24,5,80,'#cdbf9f');
+ for(const p of [[-15,-13,10,6],[15,-13,12,6],[-15,-30,19,6],[15,-30,22,6],[-15,-47,28,6],[15,-47,24,6],[-27,-34,16,6],[27,-36,17,6],[-21,-65,24,7]])modernTower(B,...p,W);
+ for(let z=0;z>-62;z-=8)for(const x of [-5,5]){B.cyl(x,2.6,z,.15,5.2,'#d1cfc0',{seg:8});B.ball(x,5.3,z,.45,'#ffdc8c',{mat:'glow',w:10,h:8})}
+ for(const p of [[-22,-7.5],[22,-7],[-22,-54],[22,-54]])palm(B,p[0],p[1],W);
+ for(const p of [[-7,-4],[7,-4],[-7,-34],[7,-34]])flag(B,p[0],p[1],.75,root,W);
+ for(let i=0;i<4;i++)cityCar(root,i%2===0?-3.65:3.65,-9-i*11,i);
+ B.cyl(20,.24,-58,3,.45,'#6a9fb3',{seg:24});B.cyl(20,.39,-58,2.65,.14,'#b6e6e1',{seg:24});
+ collider(W,20,-58,6,6);
+ const jets=new Batch();for(let j=0;j<8;j++){const a=j*Math.PI/4;jets.cyl(Math.cos(a)*1.6,.8,Math.sin(a)*1.6,.055,1.6,'#d2f4f5',{mat:'jet',seg:6})}jets.cyl(0,1.4,0,.09,2.8,'#e6fbfb',{mat:'jet',seg:6});
+ const jetG=jets.build();jetG.position.set(20,0,-58);root.add(jetG);
+ onTick(W,t=>{jetG.scale.y=.75+.3*Math.sin(t*2.2)});
+ B.box(-26,3,-14,11,6,8,'#f1e6d5');B.box(-26,6.2,-14,12,.4,9,'#b7c1b9');
+ for(let x=-30;x<=-22;x+=2)for(let y=2;y<=4;y+=2)B.box(x,y,-9.94,1.2,1.2,.1,'#81bbc8',{mat:'win'});
+ B.box(-26,1.2,-9.95,1.8,2.4,.1,'#4b6a74');
+ collider(W,-26,-14,11.2,8.2);
+ placeSign(root,[{t:'مدرسة المستقبل',size:.62},{t:'SCHOOL',size:.3,color:'#cfe3e6'}],4.4,1.1,-26,5.25,-9.85,0,{bg:'#1d4c58'});
+ B.box(25,3,-15,12,5,6,'#d5e3df');B.box(25,5.8,-15,13,.7,7,'#678f9a');
+ B.box(25,1.2,-6,11,2.1,2.3,'#d4d7d1');B.box(25,2.32,-6,11,.14,2.1,'#c4483d');
+ for(let x=21;x<=29;x+=2)B.box(x,1.5,-4.8,1.2,.8,.08,'#5b9eac',{mat:'win'});
+ collider(W,25,-15,12.2,6.2);collider(W,25,-6,11.2,2.5);
+ placeSign(root,[{t:'مترو',size:.62},{t:'METRO',size:.3,color:'#cfe3e6'}],3,1,25,4.2,-11.95,0,{bg:'#a2342c'});
+ B.cyl(0,.5,-25.5,.9,1,'#d9d2c3',{seg:16});
+ B.cyl(0,1.95,-25.5,.42,.7,'#d8b45a',{seg:6});
+ for(const s of [-1,1]){B.box(s*.95,1.95,-25.5,1.1,.04,.55,'#2c4f8f',{mat:'win'});B.box(s*.45,1.95,-25.5,.2,.05,.06,'#bfbfbf')}
+ B.ball(0,2.45,-25.5,.36,'#f0f0ea',{scale:[1,.35,1],w:12,h:6});
+ B.cyl(0,2.75,-25.5,.02,.5,'#cccccc',{seg:5});
+ B.ball(1.7,3.1,-25.5,.38,'#c4562d',{w:16,h:10});
+ collider(W,0,-25.5,1.9,1.9);
+ placeSign(root,[{t:'مسبار الأمل',size:.6},{t:'HOPE PROBE · 2021',size:.32,color:'#f0d9a6'}],1.5,.5,0,.62,-24.55);
+ B.plane(0,.08,-52,16,13,'#c8b99c');
+ for(let i=0;i<8;i++)B.plane(0,.085,-46.2-i*1.6,15.6,.06,'#b3a283');
+ for(const x of [-6,6])for(const z of [-48,-55])flag(B,x,z,.7,root,W);
+ for(const sx of [-6.3,6.3])B.box(sx,3,-58.6,.4,6,.4,'#286b69');
+ placeSign(root,[{t:'اليوم الوطني الإماراتي',size:.58},{t:'UAE NATIONAL DAY · 2 DEC',size:.3,color:'#f0d9a6'}],12,3,0,5.4,-58.4);
+ for(const x of [-5.8,5.8]){
+  B.box(x,2.45,-3,.48,4.9,.55,'#286b69');
+  for(let i=0;i<3;i++)B.box(x,1.2+i*.9,-2.69,.3,.14,.05,['#ef3340','#ffffff','#009739'][i]);
+  collider(W,x,-3,.7,.8);
+ }
+ B.box(0,4.9,-3,12.1,.65,.64,'#245453');
+ placeSign(root,[{t:'دبي · الاتحاد اليوم',size:.62},{t:'DUBAI · THE UNION TODAY',size:.34,color:'#f0d9a6'}],10.5,.62,0,4.9,-2.66,0,{bg:'#245453'});
+ addNationalDayCrowd(root,W);
+ dubaiLandmarks(B,root,W);festivalEffects(B);
+ root.add(B.build());
+ for(const [i,x,z] of [[0,-7,-16],[1,8.5,-32],[2,-7,-53]])addStar(x,z,W,'modern'+i);
+}
+function addNationalDayCrowd(root,W){
+ for(const [x,z,kind,rot] of [
+  [-6,-12,'man',10],[6,-12,'woman',-10],[-5.5,-18,'child',20],[5.5,-18,'man',-20],
+  [-7,-27,'woman',15],[7,-27,'child',-15],[-6,-40,'man',30],[6,-40,'woman',-30],
+  [-5.2,-49,'child',10],[5.2,-49,'man',-10],[-6,-55,'woman',40],[6,-55,'child',-40]
+ ])npc(x,z,kind,'wave',root,rot,{world:W,flag:true});
+ for(const [x,z,kind,rot] of [[-11,-22,'man',45],[11,-22,'woman',-45],[-10,-43,'child',20],[10,-43,'man',-20],[-3,-57,'woman',10],[3,-57,'man',-10]])npc(x,z,kind,'clap',root,rot,{world:W});
+ roam(npc(-11,-10,'woman','walk',root,0,{world:W}).root,3,.6,52,W);
+ roam(npc(11.5,-36,'man','walk',root,0,{world:W}).root,3,.7,61,W);
+ roam(npc(-11.5,-50,'child','walk',root,0,{world:W}).root,2.5,.8,73,W);
+}
+
+let sky,skyStars;
+const SKY={day:['#5a9dcc','#cfe5ea','#d9c49a'],night:['#0a1330','#2a3b66','#15151f']};
+function makeSky(){
+ const g=new THREE.SphereGeometry(600,32,16);g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count*3),3));
+ sky=new THREE.Mesh(g,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide,fog:false,depthWrite:false}));
+ sky.renderOrder=-10;sky.frustumCulled=false;scene.object3D.add(sky);paintSky(SKY.day);
+ const n=500,p=new Float32Array(n*3);
+ for(let i=0;i<n;i++){const u=Math.random()*Math.PI*2,v=.08+Math.random()*.92,r=520;p[i*3]=Math.cos(u)*Math.sqrt(1-v*v)*r;p[i*3+1]=v*r;p[i*3+2]=Math.sin(u)*Math.sqrt(1-v*v)*r}
+ const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(p,3));
+ skyStars=new THREE.Points(sg,new THREE.PointsMaterial({color:'#ffffff',size:2.2,sizeAttenuation:false,fog:false,depthWrite:false,transparent:true,opacity:.85}));
+ skyStars.visible=false;skyStars.frustumCulled=false;scene.object3D.add(skyStars);
+}
+function paintSky([top,hor,bot]){
+ const P=sky.geometry.attributes.position,C=sky.geometry.attributes.color,ct=new THREE.Color(top),ch=new THREE.Color(hor),cb=new THREE.Color(bot),c=new THREE.Color();
+ for(let i=0;i<P.count;i++){const y=P.getY(i)/600;if(y>=0)c.copy(ch).lerp(ct,Math.pow(y,.55));else c.copy(ch).lerp(cb,Math.min(1,-y*5));C.setXYZ(i,c.r,c.g,c.b)}
+ C.needsUpdate=true;
+}
+function setNight(on){
+ paintSky(on?SKY.night:SKY.day);skyStars.visible=on;
+ scene.setAttribute('fog',{type:'linear',color:on?'#1c2848':'#d3e5e6',near:on?30:40,far:on?200:260});
+ $('hemi').setAttribute('light',{type:'hemisphere',color:on?'#8093c9':'#fff6e8',groundColor:on?'#2b2833':'#b8986c',intensity:on?.55:.85});
+ $('sun').setAttribute('light',{type:'directional',color:on?'#b9caff':'#fff0d1',intensity:on?.3:.95});
+ MAT.win.emissive.set(on?'#ffcf7a':'#000000');MAT.win.emissiveIntensity=on?.6:0;
+}
+const FW={pts:null,on:false,t0:0,N:48,bursts:[],dirs:null,base:null};
+function makeFireworks(){
+ const centers=[[-15,27,-72],[15,31,-82],[-30,25,-100],[30,29,-108],[0,38,-103],[-8,22,-60],[18,23,-64]];
+ const pal=[['#ef3340','#ffffff'],['#009739','#f7d68a'],['#ffffff','#79b8ed'],['#f7d68a','#ef3340'],['#009739','#ffffff'],['#ef3340','#f7d68a'],['#79b8ed','#009739']];
+ const total=centers.length*FW.N,pos=new Float32Array(total*3),col=new Float32Array(total*3);
+ FW.dirs=new Float32Array(total*3);FW.base=new Float32Array(total*3);const c=new THREE.Color();
+ centers.forEach((cen,b)=>{
+  for(let j=0;j<FW.N;j++){
+   const i=b*FW.N+j,yy=1-2*(j+.5)/FW.N,rr=Math.sqrt(1-yy*yy),th=j*2.39996,sp=3.2+(j%3)*.7;
+   FW.dirs[i*3]=Math.cos(th)*rr*sp;FW.dirs[i*3+1]=yy*sp;FW.dirs[i*3+2]=Math.sin(th)*rr*sp;
+   c.set(pal[b][j%2]);FW.base[i*3]=c.r;FW.base[i*3+1]=c.g;FW.base[i*3+2]=c.b;
+  }
+  FW.bursts.push({c:cen,delay:b*.55,period:2.5+(b%3)*.35});
+ });
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ const cv=document.createElement('canvas');cv.width=cv.height=64;const cx=cv.getContext('2d'),gr=cx.createRadialGradient(32,32,0,32,32,32);
+ gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.35,'rgba(255,255,255,.8)');gr.addColorStop(1,'rgba(255,255,255,0)');cx.fillStyle=gr;cx.fillRect(0,0,64,64);
+ FW.pts=new THREE.Points(g,new THREE.PointsMaterial({size:1.6,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,map:new THREE.CanvasTexture(cv),fog:false}));
+ FW.pts.visible=false;FW.pts.frustumCulled=false;scene.object3D.add(FW.pts);
+ onTick('always',fireworksTick);
+}
+function fireworksTick(t){
+ if(!FW.on)return;
+ const P=FW.pts.geometry.attributes.position,C=FW.pts.geometry.attributes.color,T=t-FW.t0;
+ FW.bursts.forEach((b,bi)=>{
+  const local=T-b.delay,ph=local<0?2:(local%b.period)/1.7,e=1-Math.pow(1-Math.min(ph,1),3),fade=ph>1?0:Math.pow(1-ph,1.5);
+  for(let j=0;j<FW.N;j++){
+   const i=bi*FW.N+j,k=i*3;
+   P.array[k]=b.c[0]+FW.dirs[k]*e;P.array[k+1]=b.c[1]+FW.dirs[k+1]*e-2.2*Math.min(ph,1)**2;P.array[k+2]=b.c[2]+FW.dirs[k+2]*e;
+   C.array[k]=FW.base[k]*fade;C.array[k+1]=FW.base[k+1]*fade;C.array[k+2]=FW.base[k+2]*fade;
+  }
+ });
+ P.needsUpdate=true;C.needsUpdate=true;
+}
+function fireworks(on){FW.on=on;FW.pts.visible=on;FW.t0=scene.time/1000}
+
+function isImmersive(){return !!(scene&&scene.is('vr-mode'))}
+function anyHtmlOverlay(){return ['intro','quiz','end','artifactInfo','cinematic'].some(id=>!$(id).hidden)}
+function anyModal(){return anyHtmlOverlay()||(isImmersive()&&vrPanelStage!=='closed')}
+function setWorld(name){worldName=name;oldEl.setAttribute('visible',name==='old');modernEl.setAttribute('visible',name==='modern')}
+function resetPlayer(){
+ rig.object3D.position.set(0,0,8);rig.object3D.rotation.set(0,0,0);
+ if(!isImmersive()){
+  cameraEl.object3D.position.set(0,1.65,0);
+  const lc=cameraEl.components['look-controls'];if(lc&&lc.yawObject){lc.yawObject.rotation.y=0;lc.pitchObject.rotation.x=0}
+ }
+}
+function updateMission(){
+ const q=challenges[activeIndex()];
+ $('missionText').textContent=!q||(progress>=7&&!retryMode)?'شاهد احتفال اليوم الوطني':q.title+' — اتبع العمود الذهبي';
+}
+function update(){
+ $('count').textContent=ar(Math.min(progress,7))+' / ٧';
+ $('fill').style.width=(progress/7*100)+'%';
+ $('phase').textContent=retryMode?'مراجعة الأسئلة غير الصحيحة':progress<3?'الفريج الإماراتي القديم':progress<7?'الإمارات الحديثة • قيم الاتحاد':'احتفال اليوم الوطني';
+ $('openQuest').textContent=retryMode?`✦ إعادة السؤال ${ar(retryIndex+1)} من ${ar(retryQueue.length)}`:progress>=7?'✦ شاهد احتفال اليوم الوطني':`✦ التحدي ${ar(progress+1)} من ٧`;
+ updateMission();placeMarker();drawWrist();
+}
+function startGame(){
+ if(started&&$('intro').hidden)return;
+ $('intro').hidden=true;started=true;sparkleBurst(22);tone(523,.18);setTimeout(()=>tone(784,.22),170);
+ achievement('أهلاً بك في رحلة الاتحاد','استكشف الفريج، اجمع النجوم، وأكمل التحديات');
+ toast('اتبع العمود الذهبي إلى التحدي الأول، أو افتحه من الزر أسفل الشاشة');
+}
+function startVR(){startGame();try{scene.enterVR()}catch(e){console.warn(e)}}
+function showHeritageInfo(item){
+ if(!started||transitioning||!item||worldName!=='old'||!$('quiz').hidden||!$('end').hidden)return;
+ if(isImmersive()&&vrPanelStage!=='closed'&&vrPanelStage!=='heritage')return;
+ heritageActive=item;
+ if(!heritageSeen.has(item.key)){
+  heritageSeen.add(item.key);tone(640,.12);item.el.setAttribute('material','color','#bfe8cf');
+  achievement('اكتشاف من تراثنا',`${item.title} · ${ar(heritageSeen.size)} / ٦`);
+  if(heritageSeen.size>=3&&!heritageRewardGiven){heritageRewardGiven=true;setTimeout(()=>achievement('🏅 مستكشف التراث','اكتشفت ثلاثة عناصر من تراث الإمارات!'),1500)}
+  drawWrist();
+ }
+ if(isImmersive())vrSetStage('heritage');
+ else{$('artifactTitle').textContent=item.title;$('artifactDescription').textContent=item.description;$('artifactInfo').hidden=false}
+}
+function closeHeritageInfo(){
+ $('artifactInfo').hidden=true;heritageActive=null;
+ if(vrPanelStage==='heritage')vrPanelHide();
+}
+function showQuestion(){
+ if(!started||transitioning)return;
+ if(!$('quiz').hidden||!$('end').hidden||!$('artifactInfo').hidden||!$('cinematic').hidden)return;
+ if(isImmersive()&&['question','feedback','cinema','final'].includes(vrPanelStage))return;
+ if(progress>=7&&!retryMode){if(isImmersive())vrShowFinal();else $('end').hidden=false;return}
+ answered=false;
+ const q=challenges[activeIndex()];
+ $('qnum').textContent=retryMode?`RETRY ${retryIndex+1} / ${retryQueue.length}`:`CHALLENGE ${progress+1} / 7`;
+ $('qtitle').textContent=q.title;$('qdesc').textContent=q.desc;$('qtext').textContent=q.question;
+ $('response').textContent='';$('next').style.display='none';$('choices').replaceChildren();
+ q.choices.forEach((a,i)=>{
+  const b=document.createElement('button');b.className='choice';
+  const k=document.createElement('span');k.className='kbd';k.textContent=ar(i+1);
+  b.append(k,['أ','ب','ج'][i]+' — '+a);b.onclick=()=>answer(i);$('choices').appendChild(b);
+ });
+ if(isImmersive())vrPanelShow();else $('quiz').hidden=false;
+ tone(540,.12);
+}
+function answer(i){
+ if(answered)return;
+ const q=challenges[activeIndex()];
+ answered=true;lastAnswerCorrect=(i===q.correct);
+ const btns=[...$('choices').children];
+ if(!lastAnswerCorrect){
+  if(!retryMode&&!retryQueue.includes(progress))retryQueue.push(progress);
+  tone(250,.2,'triangle');if(btns[i])btns[i].classList.add('wrong');
+  $('response').textContent=retryMode?'✗ إجابة غير صحيحة. حاول مرة أخرى خلال المراجعة.':'✗ إجابة غير صحيحة. سنعيد هذا السؤال بعد إنهاء بقية الأسئلة.';
+ }else{
+  tone(660,.12);setTimeout(()=>tone(880,.18),120);requestAnimationFrame(()=>sparkleBurst(8));
+  if(btns[i])btns[i].classList.add('right');
+  $('response').textContent='✓ أحسنت! '+q.explain;
+ }
+ btns.forEach(b=>b.disabled=true);
+ $('next').style.display='inline-block';
+ $('next').textContent=retryMode?'متابعة المراجعة':progress===6?'متابعة إلى المراجعة أو الاحتفال':'متابعة الرحلة';
+ if(!isImmersive())setTimeout(()=>$('next').focus(),50);
+}
+function cinematic(title,message,done,duration=4200){
+ transitioning=true;
+ $('cinTitle').textContent=title;$('cinText').textContent=message;
+ $('cinProgress').style.transition='none';$('cinProgress').style.width='0%';
+ $('cinematic').hidden=false;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{$('cinProgress').style.transition=`width ${duration-700}ms linear`;$('cinProgress').style.width='100%'}));
+ setTimeout(()=>{done();$('cinematic').hidden=true;sparkleBurst(50);transitioning=false},duration);
+}
+let vrCine=null;
+function vrCinematic(beats,done){
+ transitioning=true;fadeTo(1,.45);
+ let i=0;
+ const next=()=>{
+  if(i<beats.length){const b=beats[i++];vrCine=b;vrSetStage('cinema');if(b.at)b.at();setTimeout(next,b.ms)}
+  else{vrPanelHide();fadeTo(0,.7);transitioning=false;if(done)done()}
+ };
+ setTimeout(next,480);
+}
+function travelToDubai(){
+ if(!isImmersive()){cinematic('من الفريج إلى دبي الحديثة','من الاتحاد عام ١٩٧١ إلى مدينة عالمية على ساحل الخليج.',swapWorld,4800);return}
+ tone(196,.9,'sine',.045);
+ vrCinematic([
+  {title:'١٩٧١ · قيام الاتحاد',sub:'نغادر الفريج ونعبر الزمن',line:'الوجهة التالية: دبي',ms:2100},
+  {title:'دبي الحديثة',sub:'أمامك معالم دبي ونجوم الاتحاد',line:'اتبع العمود الذهبي إلى التحدي الرابع',ms:2300,at:()=>{swapWorld();tone(392,.8,'sine',.04);setTimeout(()=>tone(587,.72,'sine',.038),220)}}
+ ]);
+}
+function swapWorld(){
+ setWorld('modern');resetPlayer();musicBeat=0;
+ achievement('🏙️ دبي الحديثة','برج خليفة ومعالم دبي بانتظارك');
+ toast('مرحباً بك في دبي الحديثة! اتبع العمود الذهبي إلى التحدي الرابع.');
+}
+function celebrationScene(){
+ setNight(true);fireworks(true);
+ $('finalStars').textContent=(stars===6?'🏅 وسام المستكشف — جمعت كل نجوم الاتحاد!':'⭐ نجوم الاتحاد التي جمعتها: '+ar(stars)+' / ٦')+' • اكتشافات التراث: '+ar(heritageSeen.size)+' / ٦';
+ sparkleBurst(110);tone(523,.2);setTimeout(()=>tone(659,.2),180);setTimeout(()=>tone(784,.3),380);
+ toast('دام عزّك يا وطن 🇦🇪');update();
+}
+function finale(){
+ if(!isImmersive()){cinematic('دام عزّك يا وطن 🇦🇪','سبعة تحديات، رحلة وطن، واحتفال يجمعنا على المحبة والتسامح. استعد للألعاب النارية!',()=>{celebrationScene();$('end').hidden=false},3900);return}
+ vrCinematic([{title:'دام عزّك يا وطن',sub:'أكملت جميع التحديات السبعة!',line:'استعد للألعاب النارية',ms:2400,at:celebrationScene}],()=>{
+  clearTimeout(vrFinalTimer);vrFinalTimer=setTimeout(()=>{if(isImmersive()&&vrPanelStage==='closed'&&progress>=7&&!retryMode)vrShowFinal()},7000);
+ });
+}
+function advance(){
+ if(!answered||transitioning)return;
+ answered=false;$('quiz').hidden=true;if(isImmersive())vrPanelHide();
+ if(retryMode){
+  if(lastAnswerCorrect)retryQueue.splice(retryIndex,1);else retryIndex++;
+  if(retryQueue.length===0){retryMode=false;update();finale();return}
+  if(retryIndex>=retryQueue.length)retryIndex=0;
+  update();toast('تابع مراجعة الأسئلة حتى تجيب عنها جميعاً بشكل صحيح.');
+  setTimeout(()=>{if(!transitioning&&retryMode)showQuestion()},isImmersive()?300:900);
+  return;
+ }
+ progress++;update();
+ if(progress===3)travelToDubai();
+ else if(progress===7){
+  if(retryQueue.length){retryMode=true;retryIndex=0;update();toast('لديك أسئلة للمراجعة. اتجه إلى العلامة الذهبية أو اضغط زر التحدي.')}
+  else finale();
+ }else{sparkleBurst(15);toast('أحسنت! اتبع العمود الذهبي إلى التحدي التالي.')}
+}
+function resetGame(){
+ clearTimeout(vrFinalTimer);transitioning=false;
+ progress=0;answered=false;retryQueue=[];retryMode=false;retryIndex=0;lastAnswerCorrect=false;
+ stars=0;visitedStars.clear();starItems.forEach(s=>s.el.setAttribute('visible',true));
+ heritageSeen.clear();heritageRewardGiven=false;heritageActive=null;
+ heritageItems.forEach(h=>h.el.setAttribute('material','color','#ffe8a9'));
+ $('collectibleStatus').textContent='نجوم الاتحاد: ٠ / ٦';
+ ['quiz','end','artifactInfo','cinematic'].forEach(id=>$(id).hidden=true);
+ setNight(false);fireworks(false);setWorld('old');resetPlayer();musicBeat=0;insideMarker=false;
+ vrPanelHide();if(isImmersive())fadeTo(0,.3);
+ update();achievement('رحلة جديدة','عدنا إلى الفريج القديم — اتبع العمود الذهبي');
+}
+function restart(){resetGame()}
+
+let vrUI=null,vrPanelStage='closed',vrChoiceIndex=0,vrHoverArea=-1,vrMenuReturn='closed';
+const QUIZ_W=1200,QUIZ_H=1390,PX_PER_M=1000,PANEL_DIST=1.5;
+const XR={hands:{},session:null,raycaster:null,ring:null,fade:null,fadeVal:0,fadeTarget:0,fadeSpeed:2,toast:null,toastUntil:0,wrist:null,wristHot:false,welcomed:false,snapReady:true};
+function createVRUI(){
+ if(vrUI)return vrUI;
+ const canvas=document.createElement('canvas');canvas.width=QUIZ_W;canvas.height=QUIZ_H;
+ const ctx=canvas.getContext('2d',{alpha:false});
+ const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(QUIZ_W/PX_PER_M,QUIZ_H/PX_PER_M),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false,toneMapped:false,fog:false}));
+ mesh.renderOrder=10000;mesh.frustumCulled=false;
+ const group=new THREE.Group();group.add(mesh);group.visible=false;scene.object3D.add(group);
+ vrUI={group,mesh,canvas,ctx,tex,areas:[],visible:false,following:false};
+ return vrUI;
+}
+function uiButton(c,top,bottom,label,base,hot,font,onSelect,extra={}){
+ const idx=vrUI.areas.length,on=extra.selected!==undefined?extra.selected:idx===vrHoverArea;
+ cvRounded(c,60,top,QUIZ_W-120,bottom-top,24,on?hot:base,on?'#ffdb86':'#6f9a88',on?7:3);
+ cvText(c,label,QUIZ_W/2,(top+bottom)/2,QUIZ_W-200,font,'#ffffff','center',font*1.2,2);
+ vrUI.areas.push({top,bottom,onSelect,action:extra.action});
+}
+function presentVRCards(){
+ const ui=createVRUI(),c=ui.ctx,w=QUIZ_W,h=QUIZ_H;
+ c.fillStyle='#102f2b';c.fillRect(0,0,w,h);
+ cvRounded(c,18,18,w-36,h-36,38,'#153b35','#d9bd7e',4);
+ cvRounded(c,40,45,w-80,114,22,'#89692e');
+ ui.areas=[];
+ const st=vrPanelStage;
+ if(st==='welcome'){
+  cvText(c,'رحلة الاتحاد',w/2,103,1040,66,'#fff4d4');
+  drawFlag(c,w/2,250,170,104);
+  const lines=['العصا اليسرى: المشي   •   العصا اليمنى: الالتفاف','وجّه الشعاع إلى الأرض واضغط الزناد للانتقال','اتبع العمود الذهبي واقترب منه لفتح التحدي','اجمع ٦ نجوم ذهبية واكتشف ٦ عناصر من التراث','زر A: التحدي التالي   •   زر X: القائمة','باليدين: وجّه ثم اقرص بالإبهام والسبابة'];
+  lines.forEach((l,i)=>cvText(c,l,w/2,385+i*102,1060,42,i===5?'#d6e8dc':'#ffffff','center',52,2));
+  uiButton(c,1060,1250,'ابدأ المغامرة','#9d7b3b','#c49a4a',64,closeWelcome);
+ }else if(st==='heritage'){
+  const item=heritageActive;
+  cvText(c,'اكتشف تراث الإمارات',w/2,106,1040,64,'#fff4d4');
+  cvRounded(c,66,215,w-132,760,30,'#1e6252');
+  cvText(c,item?item.title:'تراث الإمارات',w/2,390,990,77,'#fff0bd');
+  cvText(c,item?item.description:'',w/2,625,960,57,'#ffffff','center',88,5);
+  cvText(c,`اكتشفت ${ar(heritageSeen.size)} من ٦ عناصر`,w/2,885,990,49,'#e1d9ac');
+  uiButton(c,1040,1210,'عودة إلى المغامرة','#9d7b3b','#c49a4a',57,closeHeritageInfo);
+ }else if(st==='cinema'){
+  const b=vrCine||{};
+  drawFlag(c,w/2,103,120,74);
+  cvText(c,b.title||'',w/2,430,1030,92,'#fff1ba');
+  cvText(c,b.sub||'',w/2,660,1010,62,'#ffffff','center',80,2);
+  cvText(c,b.line||'',w/2,900,1010,52,'#ffe8ae','center',70,2);
+  cvText(c,'رحلة الاتحاد • ٢ ديسمبر ١٩٧١',w/2,1250,1010,42,'#d6e8dc');
+ }else if(st==='question'){
+  const q=challenges[activeIndex()];
+  const count=retryMode?`مراجعة السؤال ${ar(retryIndex+1)} من ${ar(retryQueue.length)}`:`السؤال ${ar(progress+1)} من ٧ • ${q.title}`;
+  cvText(c,count,w/2,103,1050,56,'#fff5dd');
+  cvRounded(c,52,185,w-104,310,28,'#1c5146','#507d6d');
+  cvText(c,q.question,w/2,340,1010,64,'#ffffff','center',82,3);
+  const tops=[536,741,946];
+  for(let i=0;i<3;i++)uiButton(c,tops[i],tops[i]+187,`${['أ','ب','ج'][i]}  —  ${q.choices[i]}`,'#255a4d','#387f68',52,()=>vrAnswer(i),{action:i,selected:i===vrChoiceIndex});
+  cvText(c,'وجّه الشعاع إلى إجابتك واضغط الزناد',w/2,1238,1060,44,'#ffe8ae');
+  cvText(c,'أو زر B للتغيير و A للاختيار',w/2,1304,1060,39,'#d6e8dc');
+ }else if(st==='feedback'){
+  const correct=lastAnswerCorrect;
+  cvText(c,correct?'إجابة صحيحة ✓':'إجابة غير صحيحة ✗',w/2,106,1050,60);
+  cvRounded(c,62,215,w-124,640,32,correct?'#195f4c':'#713f36');
+  cvText(c,correct?'أحسنت!':'لا بأس، ستحاول مرة أخرى',w/2,347,990,66,'#ffffff','center',82,2);
+  cvText(c,correct?challenges[activeIndex()].explain:retryMode?'سيعود هذا السؤال في المراجعة.':'سيظهر هذا السؤال مرة أخرى بعد الأسئلة المتبقية.',w/2,644,940,55,'#f5e8c4','center',72,4);
+  uiButton(c,942,1147,retryMode?'متابعة المراجعة ←':'متابعة الرحلة ←','#a7803a','#c99c49',72,()=>advance());
+  cvText(c,'اضغط الزناد أو زر A للمتابعة',w/2,1260,1000,45,'#e5e5c8');
+ }else if(st==='menu'){
+  cvText(c,'القائمة | رحلة الاتحاد',w/2,103,1050,62);
+  cvText(c,`التحديات: ${ar(Math.min(progress,7))} / ٧   •   نجوم الاتحاد: ${ar(stars)} / ٦`,w/2,205,1050,45,'#f9ddb1');
+  cvText(c,`اكتشافات التراث: ${ar(heritageSeen.size)} / ٦`,w/2,262,1050,40,'#f0dfbf');
+  uiButton(c,310,480,'إغلاق القائمة','#2f785b','#3f9a76',60,()=>toggleGameMenu());
+  uiButton(c,500,670,progress>=7&&!retryMode?'شاهد الاحتفال':'افتح التحدي التالي','#8a6735','#b08544',58,()=>{vrPanelHide();showQuestion()});
+  uiButton(c,690,860,smoothTurn?'الالتفاف: سلس (اضغط للتبديل)':'الالتفاف: متقطع (اضغط للتبديل)','#255a4d','#387f68',50,()=>{smoothTurn=!smoothTurn;try{localStorage.setItem('uaeq-smooth-turn',smoothTurn?'1':'0')}catch(e){}presentVRCards()});
+  uiButton(c,880,1050,soundEnabled?'إيقاف الصوت':'تشغيل الصوت','#255a4d','#387f68',54,()=>{toggleSound();presentVRCards()});
+  uiButton(c,1070,1210,'إعادة اللعب من البداية','#6c4440','#8d5751',50,restart);
+  cvText(c,'اضغط X لإغلاق القائمة',w/2,1290,1000,36,'#f8d899');
+ }else if(st==='final'){
+  drawFlag(c,w/2,103,120,74);
+  cvRounded(c,60,208,w-120,690,30,'#1f6b50');
+  cvText(c,'دام عزّك يا وطن',w/2,370,1030,88,'#fff1ba');
+  cvText(c,'مبروك! أكملت جميع الأسئلة السبعة',w/2,540,1020,60,'#ffffff','center',80,2);
+  cvText(c,`نجوم الاتحاد ${ar(stars)} / ٦   •   التراث ${ar(heritageSeen.size)} / ٦`,w/2,680,1020,46,'#ffe8ae');
+  cvText(c,'٢ ديسمبر • اليوم الوطني الإماراتي',w/2,800,1020,50,'#fff0c0');
+  uiButton(c,930,1080,'شاهد الاحتفال','#2f785b','#3f9a76',56,vrPanelHide);
+  uiButton(c,1100,1250,'العب من جديد','#9c7735','#c49a4a',60,restart);
+  cvText(c,'أو اضغط X لإغلاق هذه اللوحة',w/2,1310,990,38,'#f0e5c8');
+ }
+ ui.tex.needsUpdate=true;
+}
+function vrSetStage(stage){
+ const ui=createVRUI(),wasHidden=!ui.visible;
+ vrPanelStage=stage;vrHoverArea=-1;XR.rayArea=-2;ui.visible=true;ui.group.visible=true;
+ presentVRCards();if(wasHidden)panelFollow(0,true);
+}
+function vrPanelShow(){if(!isImmersive())return;vrChoiceIndex=0;vrSetStage('question')}
+function vrPanelHide(){vrPanelStage='closed';vrHoverArea=-1;if(vrUI){vrUI.visible=false;vrUI.group.visible=false}}
+function vrAnswer(i){if(answered||vrPanelStage!=='question'||!Number.isInteger(i)||i<0||i>2)return;answer(i);vrSetStage('feedback')}
+function vrShowFinal(){if(!isImmersive())return;clearTimeout(vrFinalTimer);vrSetStage('final')}
+function closeWelcome(){XR.welcomed=true;vrPanelHide();tone(523,.18);setTimeout(()=>tone(784,.22),170);vrToast(progress>=7?'دام عزّك يا وطن':'اتبع العمود الذهبي إلى التحدي '+ar(Math.min(progress+1,7)))}
+function toggleGameMenu(){
+ if(transitioning)return;
+ if(!isImmersive()){$('help').hidden=!$('help').hidden;return}
+ if(vrPanelStage==='menu'){if(vrMenuReturn==='closed'||vrMenuReturn==='menu'||vrMenuReturn==='cinema')vrPanelHide();else vrSetStage(vrMenuReturn)}
+ else if(vrPanelStage==='final'||vrPanelStage==='welcome'){if(vrPanelStage==='welcome')XR.welcomed=true;vrPanelHide()}
+ else{vrMenuReturn=vrPanelStage;vrSetStage('menu')}
+ tone(620,.06);
+}
+function emergencyCycle(){
+ if(vrPanelStage==='question'){vrChoiceIndex=(vrChoiceIndex+1)%3;presentVRCards();tone(560,.04)}
+ else if(vrPanelStage==='menu')toggleGameMenu();
+}
+function emergencySelect(){
+ if(transitioning)return;
+ if(!started){started=true;$('intro').hidden=true}
+ switch(vrPanelStage){
+  case 'welcome':closeWelcome();break;
+  case 'heritage':closeHeritageInfo();break;
+  case 'question':vrAnswer(vrChoiceIndex);break;
+  case 'feedback':advance();break;
+  case 'menu':{const a=vrUI.areas[vrHoverArea];if(a)a.onSelect();else toggleGameMenu();break}
+  case 'final':vrPanelHide();break;
+  case 'closed':showQuestion();break;
+ }
+}
+function panelFollow(dt,force){
+ if(!vrUI||!vrUI.visible)return;
+ headWorld(_h);headForward(_f);
+ const tx=_h.x+_f.x*PANEL_DIST,tz=_h.z+_f.z*PANEL_DIST,ty=_h.y-.1,g=vrUI.group.position;
+ if(force){g.set(tx,ty,tz);vrUI.following=false}
+ else{
+  const vx=g.x-_h.x,vz=g.z-_h.z,dist=Math.hypot(vx,vz)||1,ang=Math.acos(Math.max(-1,Math.min(1,(vx*_f.x+vz*_f.z)/dist)));
+  if(ang>40*D2R||dist>2.7||dist<.9)vrUI.following=true;
+  if(vrUI.following){const k=1-Math.exp(-dt*4.5);g.x+=(tx-g.x)*k;g.z+=(tz-g.z)*k;if(ang<4*D2R&&Math.abs(dist-PANEL_DIST)<.12)vrUI.following=false}
+  g.y+=(ty-g.y)*(1-Math.exp(-dt*3));
+ }
+ vrUI.group.lookAt(_h.x,g.y,_h.z);vrUI.group.updateMatrixWorld(true);
+}
+function headWorld(v){const cam=cameraEl.getObject3D('camera');return (cam||cameraEl.object3D).getWorldPosition(v)}
+function headForward(v){const cam=cameraEl.getObject3D('camera');cam.getWorldDirection(v);v.y=0;if(v.lengthSq()<1e-6)v.set(0,0,-1);return v.normalize()}
+function makeHandView(side){
+ const grip=new THREE.Group();grip.matrixAutoUpdate=false;grip.visible=false;scene.object3D.add(grip);
+ const B=new Batch();
+ B.cyl(0,-.015,.035,.021,.11,'#2c3133',{rot:[-65,0,0],seg:10});
+ B.ball(0,.01,-.012,.032,'#3a4043',{scale:[1,.75,1.25],w:10,h:6});
+ B.ball(side==='left'?.012:-.012,.032,-.02,.008,'#e9c68b',{mat:'glow',w:6,h:4});
+ B.torus(0,.0,-.045,.045,.006,'#e9c68b',{rot:[20,0,0],mat:'glow',ts:20});
+ grip.add(B.build());
+ const ray=new THREE.Group();ray.matrixAutoUpdate=false;ray.visible=false;scene.object3D.add(ray);
+ const bg=new THREE.CylinderGeometry(.0028,.0028,1,6,1,true);bg.rotateX(Math.PI/2);bg.translate(0,0,-.5);
+ const beam=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:'#ff3030',transparent:true,opacity:.85,depthWrite:false,fog:false}));beam.renderOrder=10001;beam.frustumCulled=false;ray.add(beam);
+ const dot=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),new THREE.MeshBasicMaterial({color:'#ff2222',depthTest:false,depthWrite:false,transparent:true,fog:false}));dot.renderOrder=10002;dot.frustumCulled=false;ray.add(dot);
+ return {side,grip,ray,beam,dot,src:null,hover:null,prev:{},lastSelect:0,origin:new THREE.Vector3(),dir:new THREE.Vector3(),active:false};
+}
+function setupXR(){
+ XR.raycaster=new THREE.Raycaster();
+ for(const side of ['left','right'])XR.hands[side]=makeHandView(side);
+ const rg=new THREE.RingGeometry(.22,.31,32);rg.rotateX(-Math.PI/2);
+ XR.ring=new THREE.Mesh(rg,new THREE.MeshBasicMaterial({color:'#ffd56e',transparent:true,opacity:.9,depthWrite:false,fog:false}));XR.ring.visible=false;scene.object3D.add(XR.ring);
+ const cam=cameraEl.getObject3D('camera');
+ XR.fade=new THREE.Mesh(new THREE.SphereGeometry(.4,16,8),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0,side:THREE.BackSide,depthTest:false,depthWrite:false,fog:false}));
+ XR.fade.renderOrder=9000;XR.fade.visible=false;XR.fade.frustumCulled=false;cam.add(XR.fade);
+ const tc=document.createElement('canvas');tc.width=1024;tc.height=160;
+ const tt=new THREE.CanvasTexture(tc);tt.colorSpace=THREE.SRGBColorSpace;
+ XR.toast=new THREE.Mesh(new THREE.PlaneGeometry(1.0,.156),new THREE.MeshBasicMaterial({map:tt,transparent:true,depthTest:false,depthWrite:false,toneMapped:false,fog:false}));
+ XR.toast.position.set(0,-.36,-1.35);XR.toast.renderOrder=10005;XR.toast.visible=false;XR.toast.frustumCulled=false;XR.toast.userData={c:tc.getContext('2d'),tex:tt};cam.add(XR.toast);
+ const wc=document.createElement('canvas');wc.width=512;wc.height=256;
+ const wt=new THREE.CanvasTexture(wc);wt.colorSpace=THREE.SRGBColorSpace;
+ const wm=new THREE.Mesh(new THREE.PlaneGeometry(.15,.075),new THREE.MeshBasicMaterial({map:wt,transparent:true,toneMapped:false,fog:false}));
+ wm.position.set(0,.065,.045);wm.rotation.x=-50*D2R;XR.hands.left.grip.add(wm);
+ XR.wrist={mesh:wm,ctx:wc.getContext('2d'),tex:wt};drawWrist();
+ scene.addEventListener('enter-vr',onEnterVR);scene.addEventListener('exit-vr',onExitVR);
+}
+function drawWrist(){
+ if(!XR.wrist)return;const c=XR.wrist.ctx,w=512,h=256;
+ c.clearRect(0,0,w,h);cvRounded(c,6,6,w-12,h-12,30,'#123a33f0','#d9bd7e',5);
+ cvText(c,progress>=7&&!retryMode?'اكتملت التحديات ✓':`التحدي ${ar(Math.min(progress+1,7))} من ٧`,w/2,60,460,40,'#ffe6a8');
+ cvText(c,`نجوم ${ar(stars)} / ٦   •   تراث ${ar(heritageSeen.size)} / ٦`,w/2,116,470,31,'#ffffff');
+ cvRounded(c,40,152,w-80,80,22,XR.wristHot?'#3f9a76':'#2a6b55','#ffdb86',3);
+ cvText(c,'القائمة',w/2,193,400,40,'#ffffff');
+ XR.wrist.tex.needsUpdate=true;
+}
+function vrToast(text){
+ if(!XR.toast||!isImmersive())return;
+ const {c,tex}=XR.toast.userData;c.clearRect(0,0,1024,160);
+ cvRounded(c,4,4,1016,152,40,'#0d2e2bee','#e9c68b',4);cvText(c,text,512,80,960,44,'#fff1d0','center',52,2);
+ tex.needsUpdate=true;XR.toast.visible=true;XR.toastUntil=performance.now()+3200;
+}
+function fadeTo(v,seconds=.5){XR.fadeTarget=v;XR.fadeSpeed=1/Math.max(.05,seconds)}
+function fadeTick(dt){
+ if(!XR.fade)return;
+ if(XR.fadeVal!==XR.fadeTarget){const s=dt*XR.fadeSpeed;XR.fadeVal=XR.fadeVal<XR.fadeTarget?Math.min(XR.fadeTarget,XR.fadeVal+s):Math.max(XR.fadeTarget,XR.fadeVal-s)}
+ XR.fade.material.opacity=XR.fadeVal;XR.fade.visible=isImmersive()&&XR.fadeVal>.002;
+ if(XR.toast.visible&&performance.now()>XR.toastUntil)XR.toast.visible=false;
+}
+function onEnterVR(){
+ const s=scene.xrSession||scene.renderer.xr.getSession();
+ if(s&&s!==XR.session){
+  XR.session=s;
+  s.addEventListener('selectstart',e=>{const h=XR.hands[e.inputSource&&e.inputSource.handedness];if(h)xrSelect(h)});
+ }
+ started=true;$('intro').hidden=true;$('help').hidden=true;
+ $('mouseCursor').setAttribute('raycaster','enabled',false);
+ XR.fadeVal=0;XR.fadeTarget=0;
+ if(!$('quiz').hidden){$('quiz').hidden=true;vrChoiceIndex=0;vrSetStage(answered?'feedback':'question')}
+ else if(!$('end').hidden){$('end').hidden=true;vrShowFinal()}
+ else if(!$('artifactInfo').hidden){$('artifactInfo').hidden=true;vrSetStage('heritage')}
+ else if(!XR.welcomed&&!transitioning)vrSetStage('welcome');
+ drawWrist();
+}
+function onExitVR(){
+ const stage=vrPanelStage==='menu'?vrMenuReturn:vrPanelStage;
+ vrPanelHide();
+ for(const side in XR.hands){const h=XR.hands[side];h.grip.visible=h.ray.visible=false;h.hover=null}
+ XR.ring.visible=false;XR.fadeVal=XR.fadeTarget=0;XR.fade.visible=false;XR.toast.visible=false;
+ $('mouseCursor').setAttribute('raycaster','enabled',true);
+ rig.object3D.rotation.set(0,0,0);
+ if(stage==='question'||stage==='feedback')$('quiz').hidden=false;
+ else if(stage==='final')$('end').hidden=false;
+ else if(stage==='heritage'&&heritageActive){$('artifactTitle').textContent=heritageActive.title;$('artifactDescription').textContent=heritageActive.description;$('artifactInfo').hidden=false}
+}
+function stickOf(h){
+ const g=h&&h.src&&h.src.gamepad;if(!g||!g.axes||g.axes.length<2)return null;
+ const a=g.axes,x=a.length>=4?a[2]:a[0],y=a.length>=4?a[3]:a[1];
+ return Number.isFinite(x)&&Number.isFinite(y)?{x,y}:null;
+}
+function rotateRigAboutHead(angle){
+ headWorld(_h);const p=rig.object3D.position,dx=p.x-_h.x,dz=p.z-_h.z,c=Math.cos(angle),s=Math.sin(angle);
+ p.x=_h.x+dx*c+dz*s;p.z=_h.z-dx*s+dz*c;rig.object3D.rotation.y+=angle;rig.object3D.updateMatrixWorld(true);
+}
+function locomotion(dt){
+ const L=stickOf(XR.hands.left),R=stickOf(XR.hands.right);
+ if(L){
+  const x=Math.abs(L.x)>.18?L.x:0,y=Math.abs(L.y)>.18?L.y:0;
+  if(x||y){headForward(_f);const sp=2.6*dt;rig.object3D.position.x+=(_f.x*-y+-_f.z*x)*sp;rig.object3D.position.z+=(_f.z*-y+_f.x*x)*sp}
+ }
+ if(R){
+  if(smoothTurn){if(Math.abs(R.x)>.2)rotateRigAboutHead(-R.x*100*D2R*dt)}
+  else if(Math.abs(R.x)>.65&&XR.snapReady){rotateRigAboutHead(-Math.sign(R.x)*45*D2R);XR.snapReady=false;tone(480,.04)}
+  else if(Math.abs(R.x)<.3)XR.snapReady=true;
+ }
+}
+function buttonsTick(){
+ for(const side of ['left','right']){
+  const h=XR.hands[side],g=h.src&&h.src.gamepad;
+  for(const i of [4,5]){
+   const p=!!(g&&g.buttons&&g.buttons[i]&&g.buttons[i].pressed);
+   if(p&&!h.prev[i]){if(side==='right'&&i===4)emergencySelect();else if(side==='right'&&i===5)emergencyCycle();else toggleGameMenu()}
+   h.prev[i]=p;
+  }
+ }
+}
+function panelModal(){return vrPanelStage!=='closed'}
+function updateHand(h,frame,ref){
+ if(!h.src){h.ray.visible=h.grip.visible=false;h.active=false;h.hover=null;return}
+ const rp=frame.getPose(h.src.targetRaySpace,ref);
+ if(rp){
+  _mA.fromArray(rp.transform.matrix);h.ray.matrix.multiplyMatrices(rig.object3D.matrixWorld,_mA);h.ray.matrixWorldNeedsUpdate=true;
+  h.ray.visible=true;h.active=true;h.origin.setFromMatrixPosition(h.ray.matrix);h.dir.set(0,0,-1).transformDirection(h.ray.matrix);
+ }else{h.ray.visible=false;h.active=false}
+ const gp=h.src.gripSpace&&frame.getPose(h.src.gripSpace,ref);
+ if(gp){_mA.fromArray(gp.transform.matrix);h.grip.matrix.multiplyMatrices(rig.object3D.matrixWorld,_mA);h.grip.matrixWorldNeedsUpdate=true;h.grip.visible=true;h.grip.updateMatrixWorld(true)}
+ else h.grip.visible=false;
+}
+function hoverFor(h){
+ if(!h.active)return null;
+ const rc=XR.raycaster;rc.set(h.origin,h.dir);rc.far=40;
+ if(vrUI&&vrUI.visible){
+  const hit=rc.intersectObject(vrUI.mesh,false)[0];
+  if(hit&&hit.uv){const px=hit.uv.x*QUIZ_W,py=(1-hit.uv.y)*QUIZ_H;const ai=vrUI.areas.findIndex(a=>py>=a.top&&py<=a.bottom&&px>=50&&px<=QUIZ_W-50);return{kind:'ui',dist:hit.distance,area:ai}}
+ }
+ if(h.side==='right'&&XR.hands.left.grip.visible){
+  XR.wrist.mesh.getWorldPosition(_v);_sph.set(_v,.085);
+  if(rc.ray.intersectSphere(_sph,_v2))return{kind:'wrist',dist:_v2.distanceTo(h.origin)};
+ }
+ if(panelModal())return null;
+ let best=null;
+ for(const tg of vrTargets){
+  if(!tg.enabled())continue;
+  tg.pos(_v);_sph.set(_v,tg.radius);
+  if(rc.ray.intersectSphere(_sph,_v2)){const d=_v2.distanceTo(h.origin);if(d<40&&(!best||d<best.dist))best={kind:'target',dist:d,target:tg}}
+ }
+ if(best)return best;
+ if(h.dir.y<-.06){
+  const t=-h.origin.y/h.dir.y;
+  if(t>0&&t<22){const p=h.origin.clone().addScaledVector(h.dir,t);return{kind:'ground',dist:t,point:p,valid:!blocked(worldName,p.x,p.z,.3)}}
+ }
+ return null;
+}
+function xrSelect(h){
+ const now=performance.now();if(now-h.lastSelect<250)return;h.lastSelect=now;
+ if(!started){started=true;$('intro').hidden=true}
+ if(transitioning)return;
+ const hv=h.hover;
+ if(hv){
+  if(hv.kind==='ui'){
+   const a=vrUI.areas[hv.area];
+   if(a){tone(700,.05);a.onSelect()}
+   else if(vrPanelStage==='feedback')advance();
+   else if(vrPanelStage==='heritage')closeHeritageInfo();
+   else if(vrPanelStage==='welcome')closeWelcome();
+   return;
+  }
+  if(hv.kind==='wrist'){toggleGameMenu();return}
+  if(hv.kind==='target'){hv.target.onSelect();return}
+  if(hv.kind==='ground'){if(hv.valid)teleport(hv.point);else tone(220,.08,'triangle');return}
+ }
+ if(vrPanelStage==='heritage')closeHeritageInfo();
+ else if(vrPanelStage==='feedback')advance();
+}
+function teleport(p){
+ headWorld(_h);rig.object3D.position.x+=p.x-_h.x;rig.object3D.position.z+=p.z-_h.z;rig.object3D.updateMatrixWorld(true);
+ XR.fadeVal=.75;fadeTo(0,.25);tone(600,.06);
+}
+function xrTick(t,dt){
+ const frame=scene.frame,session=scene.xrSession,ref=scene.renderer.xr.getReferenceSpace();
+ if(!frame||!session||!ref)return;
+ XR.hands.left.src=XR.hands.right.src=null;
+ for(const src of session.inputSources){const h=XR.hands[src.handedness];if(h&&src.targetRaySpace)h.src=src}
+ if(!transitioning)locomotion(dt);
+ rig.object3D.updateMatrixWorld(true);resolvePlayer();rig.object3D.updateMatrixWorld(true);
+ buttonsTick();
+ panelFollow(dt,false);
+ let uiHover=-1,wristHot=false,ringShown=false;
+ for(const tg of vrTargets)tg.hot=false;
+ updateHand(XR.hands.right,frame,ref);updateHand(XR.hands.left,frame,ref);
+ for(const side of ['right','left']){
+  const h=XR.hands[side];
+  const hv=h.hover=hoverFor(h);
+  const len=hv?hv.dist:3;
+  h.beam.scale.z=len;h.dot.position.z=-len;h.dot.visible=!!hv&&hv.kind!=='ground';
+  h.beam.material.color.set(hv&&hv.kind==='ground'?(hv.valid?'#ffd56e':'#a04a3a'):'#ff3030');
+  h.beam.material.opacity=hv?.9:.45;
+  if(hv&&hv.kind==='ui'&&hv.area>=0&&uiHover<0)uiHover=hv.area;
+  if(hv&&hv.kind==='wrist')wristHot=true;
+  if(hv&&hv.kind==='target')hv.target.hot=true;
+  if(hv&&hv.kind==='ground'&&!ringShown){ringShown=true;XR.ring.position.set(hv.point.x,.03,hv.point.z);XR.ring.material.color.set(hv.valid?'#ffd56e':'#d0503c')}
+ }
+ XR.ring.visible=ringShown;
+ for(const tg of vrTargets){const o=(tg.hoverEl||tg.el).object3D,s=tg.hot?1.25:1;o.scale.setScalar(o.scale.x+(s-o.scale.x)*Math.min(1,dt*12))}
+ if(uiHover!==XR.rayArea&&vrUI&&vrUI.visible){
+  XR.rayArea=uiHover;vrHoverArea=uiHover;
+  const a=vrUI.areas[uiHover];if(vrPanelStage==='question'&&a&&a.action!=null)vrChoiceIndex=a.action;
+  presentVRCards();
+ }
+ if(wristHot!==XR.wristHot){XR.wristHot=wristHot;drawWrist()}
+}
+
+const joy={x:0,y:0,active:false};
+function setupJoystick(){
+ const pad=$('joy'),knob=$('joyKnob');
+ const move=e=>{const r=pad.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),m=Math.min(1,Math.hypot(dx,dy)/50)||0,a=Math.atan2(dy,dx);joy.x=Math.cos(a)*m;joy.y=Math.sin(a)*m;knob.style.transform=`translate(${joy.x*36}px,${joy.y*36}px)`};
+ const end=()=>{joy.active=false;joy.x=joy.y=0;knob.style.transform=''};
+ pad.addEventListener('pointerdown',e=>{joy.active=true;pad.setPointerCapture(e.pointerId);move(e);e.preventDefault()});
+ pad.addEventListener('pointermove',e=>{if(joy.active)move(e)});
+ pad.addEventListener('pointerup',end);pad.addEventListener('pointercancel',end);
+ if(matchMedia('(pointer:coarse)').matches||/OculusBrowser/i.test(navigator.userAgent))document.body.classList.add('touch');
+}
+function resolvePlayer(){
+ headWorld(_h);const r=pushOut(worldName,_h.x,_h.z,.35);
+ for(const n of npcs){
+  if(n.world!==worldName)continue;n.root.getWorldPosition(_v);
+  const dx=r.x-_v.x,dz=r.z-_v.z,d=Math.hypot(dx,dz),min=n.radius+.3;
+  if(d<min&&d>1e-4){r.x+=dx/d*(min-d);r.z+=dz/d*(min-d)}
+ }
+ if(r.x!==_h.x||r.z!==_h.z){rig.object3D.position.x+=r.x-_h.x;rig.object3D.position.z+=r.z-_h.z}
+}
+let nextHud=0;
+function desktopTick(t,dt){
+ const block=anyHtmlOverlay();
+ if(block!==wasdBlocked){wasdBlocked=block;cameraEl.setAttribute('wasd-controls','enabled',!block)}
+ if(joy.active&&!block&&(joy.x||joy.y)){headForward(_f);const sp=3.2*dt;rig.object3D.position.x+=(_f.x*-joy.y+-_f.z*joy.x)*sp;rig.object3D.position.z+=(_f.z*-joy.y+_f.x*joy.x)*sp}
+ rig.object3D.updateMatrixWorld(true);resolvePlayer();
+}
+function proximity(t){
+ headWorld(_h);
+ if(t>nextHud&&markerEl){
+  nextHud=t+.5;
+  if(markerEl.object3D.visible){const p=markerEl.object3D.position;$('missionDist').textContent='العمود الذهبي على بعد '+ar(Math.round(Math.hypot(_h.x-p.x,_h.z-p.z)))+' م'}
+  else $('missionDist').textContent='';
+ }
+ if(!started||transitioning||anyModal())return;
+ for(const s of starItems)if(s.world===worldName&&!visitedStars.has(s.key)&&Math.hypot(_h.x-s.x,_h.z-s.z)<1.6)s.collect();
+ if(markerEl.object3D.visible){
+  const p=markerEl.object3D.position,inside=Math.hypot(_h.x-p.x,_h.z-p.z)<1.9;
+  if(inside&&!insideMarker)showQuestion();
+  insideMarker=inside;
+ }else insideMarker=false;
+}
+document.addEventListener('keydown',e=>{
+ if(e.repeat)return;
+ if(e.key==='Escape'){if(!$('artifactInfo').hidden)closeHeritageInfo();else if(!$('help').hidden)$('help').hidden=true;return}
+ if(!$('intro').hidden){if(e.key==='Enter'&&document.activeElement===document.body){e.preventDefault();startGame()}return}
+ if(!$('quiz').hidden){
+  const map={'1':0,'2':1,'3':2,'١':0,'٢':1,'٣':2};
+  if(e.key in map&&!answered){answer(map[e.key]);return}
+  if((e.key==='Enter'||e.key===' ')&&answered&&document.activeElement!==$('next')){e.preventDefault();advance()}
+  return;
+ }
+ if(!$('artifactInfo').hidden){if(e.key==='Enter'||e.key===' '){e.preventDefault();closeHeritageInfo()}return}
+ if(started&&!anyHtmlOverlay()&&(e.key==='q'||e.key==='Q'||e.key==='ض'))showQuestion();
+});
+
+function gameTick(t,dt){
+ rig.object3D.updateMatrixWorld(true);headWorld(_h);
+ for(const f of anims.always)f(t,dt);
+ for(const f of anims[worldName])f(t,dt);
+ updateCharacters(t,dt);
+ if(isImmersive())xrTick(t,dt);else desktopTick(t,dt);
+ proximity(t);fadeTick(dt);
+}
+function showLoadError(err){
+ $('loader').hidden=true;$('fallback').style.display='grid';
+ if(err)$('errText').textContent=String(err&&err.message||err);
+}
+function boot(){
+ if(!window.AFRAME){showLoadError('A-Frame could not be loaded');return}
+ initScratch();
+ AFRAME.registerComponent('game-loop',{tick(t,dt){if(dt)gameTick(t/1000,Math.min(dt,100)/1000)}});
+ scene=$('scene');rig=$('rig');cameraEl=$('camera');oldEl=$('oldWorld');modernEl=$('newWorld');
+ let pct=0;
+ const timer=setInterval(()=>{if($('loader').hidden){clearInterval(timer);return}pct=Math.min(92,pct+Math.max(1,Math.floor((100-pct)/12)));$('loadFill').style.width=pct+'%';$('loadPercent').textContent=pct+'%'},160);
+ const deadline=setTimeout(()=>{clearInterval(timer);showLoadError('Timed out while loading the 3D scene')},25000);
+ const go=()=>{
+  try{
+   initMaterials();buildEnvironment();buildOld();buildModern();makeMarker();setupXR();setupJoystick();
+   update();scene.setAttribute('game-loop','');
+   clearInterval(timer);clearTimeout(deadline);
+   $('loadFill').style.width='100%';$('loadPercent').textContent='100%';$('loadStatus').textContent='جاهز للعب!';
+   setTimeout(()=>{$('loader').hidden=true},350);
+   if(navigator.xr&&navigator.xr.isSessionSupported)navigator.xr.isSessionSupported('immersive-vr').then(ok=>{if(ok)$('vrStart').style.display='inline-block'}).catch(()=>{});
+   if(!window.isSecureContext&&/OculusBrowser|Quest/i.test(navigator.userAgent))$('xrNote').style.display='block';
+  }catch(err){console.error('Game initialization failed',err);clearInterval(timer);clearTimeout(deadline);showLoadError(err)}
+ };
+ if(scene.hasLoaded)go();else scene.addEventListener('loaded',go,{once:true});
+}
+boot();
+</script>
+</body></html>
